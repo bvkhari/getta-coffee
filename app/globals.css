@@ -68,16 +68,11 @@ html, body {
 
 .mark { text-align: center; }
 .wordmark {
-  font-family: var(--display);
-  font-weight: 800;
-  font-stretch: 90%;
-  letter-spacing: .01em;
-  line-height: .86;
-  font-size: 30px;
-  color: var(--maroon);
-  margin: 0;
+  display: block;
+  width: min(176px, 48%);
+  height: auto;
+  margin: 0 auto;
 }
-.wordmark sup { font-size: .34em; vertical-align: super; font-weight: 700; }
 .eyebrow {
   font-family: var(--display);
   font-size: 10px;
