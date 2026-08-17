@@ -4,9 +4,10 @@ Collect 5 receipts, get 1 free drink. Replaces the Google Apps Script version,
 which was locked to a `script.google.com/macros/s/…` URL that no custom domain
 can point at.
 
-- **Customer** — join, see your stamp card by phone number, view an earned drink.
-- **Staff** — one shared passcode unlocks a counter screen: look up a phone
-  number, add a stamp, redeem a free drink.
+- **Customer**: join, then check your stamp card by phone number and show an
+  earned drink at the counter.
+- **Staff**: one shared passcode unlocks a counter screen for looking up a phone
+  number, adding a stamp, and redeeming a free drink.
 
 Next.js 16 (App Router) · React 19 · Supabase Postgres · plain CSS.
 
@@ -14,10 +15,11 @@ Next.js 16 (App Router) · React 19 · Supabase Postgres · plain CSS.
 
 The visual system is ported from [`mockup/getta-rewards.html`](mockup/getta-rewards.html),
 a standalone clickable prototype with fake data. It stays in the repo as the
-design reference — open it directly in a browser, no build needed.
+design reference. Open it straight in a browser; there is nothing to build.
 
-Customer screens are cream; the staff screen is espresso-dark, so the mode is
-obvious at a glance behind a counter and holds up under glare.
+Customer screens are cream. The staff screen is espresso-dark, so whoever is
+behind the counter can tell the two apart at a glance, and it holds up under
+glare.
 
 ## Setup
 
@@ -59,8 +61,8 @@ Customer at `/`, staff at `/staff`.
 
 ## How the data works
 
-Three tables. A member's stamp balance is **never** a stored counter — it is
-derived as the number of stamps not yet consumed by a redemption:
+Three tables. Nothing stores a member's stamp balance. It is derived as the
+number of stamps not yet consumed by a redemption:
 
 ```
 members   id, name, phone (unique), created_at
@@ -69,43 +71,50 @@ rewards   id, member_id, redeemed_at
 ```
 
 Balance is `count(stamps where reward_id is null)`. Redeeming inserts a `rewards`
-row and stamps the 5 oldest open rows with its id, so extra stamps roll over
-instead of being lost, and a mis-stamp is undone by deleting one row rather than
-reconciling a number.
+row and stamps the 5 oldest open rows with its id. Extra stamps therefore roll
+over instead of vanishing, and a mis-stamp is undone by deleting one row rather
+than reconciling a number.
 
 Two Postgres functions hold the rules, so they can't drift between callers:
 
-- `add_stamp(member)` — inserts one stamp, returns the new balance. Rejects a
-  second stamp within 5 seconds, which absorbs a double-tap at the counter
-  without blocking a customer who genuinely buys two drinks a minute apart.
-- `redeem_reward(member)` — refuses unless the balance covers a full card, then
-  records the redemption and consumes the stamps atomically.
+- **`add_stamp(member)`**: inserts one stamp, returns the new balance. Rejects a
+  second stamp within 5 seconds. That absorbs a double-tap at the counter but
+  still lets you stamp someone twice if they genuinely buy two drinks a minute
+  apart.
+- **`redeem_reward(member)`**: refuses unless the balance covers a full card,
+  then records the redemption and consumes the stamps atomically.
 
 `stamps_per_reward()` returns 5. Change the program in that one function and
 `STAMPS_PER_REWARD` in [`lib/members.ts`](lib/members.ts).
 
 ## Security model
 
-- Every query runs in a server component or server action. **No Supabase key of
-  any kind reaches the browser.**
-- RLS is enabled on all three tables with no policies. The service role bypasses
-  it; a leaked anon key would read nothing.
-- **Members are identified by phone number alone** — no password, no SMS code.
-  This matches the old Apps Script app and keeps logins free and frictionless.
-  It also means someone who knows a member's phone number can see that member's
-  stamp count and name. That was an explicit tradeoff for a 5-stamp coffee card.
-  If real value is ever attached to an account, add SMS OTP via Supabase Auth.
-- Staff share one passcode, compared in constant time, held in an HMAC-signed
-  httpOnly cookie scoped to `/staff` for 12 hours. Stamps are therefore not
-  attributable to an individual barista. Add staff accounts and a `staff_id` on
-  `stamps` if you need that.
-- `/staff` and `/card` are excluded from robots.
+Every query runs in a server component or server action, so **no Supabase key of
+any kind reaches the browser.** RLS is enabled on all three tables with no
+policies: the service role bypasses it, and a leaked anon key would read
+nothing.
+
+Members are identified by phone number alone. No password, no SMS code. That
+matches the old Apps Script app and keeps logins free and frictionless. It also
+means anyone who knows a member's phone number can see that member's name and
+stamp count, which was an accepted tradeoff for a 5-stamp coffee card. Add SMS
+OTP via Supabase Auth if real value is ever attached to an account.
+
+Staff share one passcode, compared in constant time and held in an HMAC-signed
+httpOnly cookie scoped to `/staff` for 12 hours. No stamp is attributable to an
+individual barista. If you need that, add staff accounts and a `staff_id` column
+on `stamps`.
+
+`/staff` and `/card` are excluded from robots.
 
 ## Deploying
 
 Vercel: import the repo, add the four environment variables, add the domain.
-`SUPABASE_SERVICE_ROLE_KEY` must be a server-side variable — never prefix it
-`NEXT_PUBLIC_`.
+Keep `SUPABASE_SERVICE_ROLE_KEY` server-side; prefixing it `NEXT_PUBLIC_` would
+publish it to every visitor.
+
+Vercel's Hobby plan is licensed for non-commercial use, so a paying shop's live
+app belongs on Pro.
 
 ## Migrating from the Apps Script version
 
@@ -117,8 +126,8 @@ new domain is verified.
 ## Verified
 
 Both flows have been walked against the live Supabase project: join → staff
-lookup → `+1 STAMP` → reward → `REDEEM FREE DRINK`, with the database checked
-after each step. Also confirmed directly against Postgres:
+lookup → `+1 STAMP` → reward → `REDEEM FREE DRINK`, checking the database after
+each step. Also confirmed directly against Postgres:
 
 - balance starts at 0 and increments
 - a second stamp within 5 seconds is rejected and the balance is unchanged
@@ -129,7 +138,7 @@ after each step. Also confirmed directly against Postgres:
 
 ## Not built yet
 
-- The 4-digit code step shown in the mockup's login flow. Deliberately dropped,
-  since members are identified by phone number alone.
-- Staff attribution. Every stamp records *when*, not *who* — see the security
-  note above.
+- **Member verification codes.** The 4-digit step from the mockup's login flow
+  was dropped on purpose, since members are identified by phone number alone.
+- **Staff attribution.** Stamps record when they were added and nothing about who
+  added them. See the security model above.
