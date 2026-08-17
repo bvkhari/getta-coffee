@@ -3,6 +3,18 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
+/* No element here is a zoom target, and treating them as one costs every tap a
+   wait while the browser decides whether a second tap is coming. That wait is
+   what made fast entry on the staff keypad drop digits. */
+button, a, .btn, label.f, input.t {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 :root {
   --ivory:        #FBF4E9;
   --ivory-deep:   #F1E3CC;
