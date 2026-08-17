@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
-import { STAMPS_PER_REWARD } from "@/lib/members";
-import { currentMemberId } from "@/lib/session";
+import { currentMember, STAMPS_PER_REWARD } from "@/lib/members";
 import { Footer, Wordmark } from "./components";
 import { EntryForm } from "./entry-form";
 
 export default async function EntryPage() {
-  // A returning member on the same device goes straight to their card.
-  if (await currentMemberId()) redirect("/card");
+  // A returning member on the same device goes straight to their card. Checked
+  // against the database, so a cookie for a member who no longer exists lands
+  // here on the join screen instead of ping-ponging with /card.
+  if (await currentMember()) redirect("/card");
 
   return (
     <div className="shell">

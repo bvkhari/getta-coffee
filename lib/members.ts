@@ -1,4 +1,5 @@
 import { db } from "@/lib/supabase";
+import { currentMemberId } from "@/lib/session";
 
 export const STAMPS_PER_REWARD = 5;
 
@@ -51,6 +52,19 @@ export async function findById(id: string): Promise<Member | null> {
   return (data as Member | null) ?? null;
 }
 
+/**
+ * The signed-in member, or null.
+ *
+ * Resolves the row rather than trusting the cookie's id, because a cookie can
+ * outlive the member it names — a deleted record, or a restored database. The
+ * callers that only checked for an id used to bounce `/` to `/card` and back
+ * forever in that case.
+ */
+export async function currentMember(): Promise<Member | null> {
+  const id = await currentMemberId();
+  return id ? await findById(id) : null;
+}
+
 export async function createMember(
   name: string,
   phone: string,
@@ -97,6 +111,28 @@ export async function addStamp(memberId: string): Promise<number> {
   const { data, error } = await db().rpc("add_stamp", { p_member: memberId });
   if (error) throw error;
   return data as unknown as number;
+}
+
+/**
+ * How long after a stamp staff can still take it back. Long enough to catch the
+ * slip after the customer has walked away, short enough that it isn't a way to
+ * quietly remove stamps later.
+ */
+export const UNDO_WINDOW_MS = 10 * 60 * 1000;
+
+/** True when the newest stamp is still inside the undo window. */
+export function canUndo(card: Card): boolean {
+  const newest = card.visits[0];
+  return newest ? Date.now() - new Date(newest).getTime() < UNDO_WINDOW_MS : false;
+}
+
+/** Removes the newest open stamp. Returns false if there was nothing to remove. */
+export async function undoLastStamp(memberId: string): Promise<boolean> {
+  const { data, error } = await db().rpc("undo_last_stamp", {
+    p_member: memberId,
+  });
+  if (error) throw error;
+  return data as unknown as boolean;
 }
 
 export async function redeemReward(memberId: string): Promise<string> {

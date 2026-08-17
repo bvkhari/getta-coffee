@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getCard, findById } from "@/lib/members";
-import { currentMemberId } from "@/lib/session";
+import { currentMember, getCard } from "@/lib/members";
 import { logOut } from "../actions";
 import { Eyebrow, Footer, Progress, Slots, formatVisit } from "../components";
 
@@ -12,10 +11,7 @@ export default async function CardPage({
 }: {
   searchParams: Promise<{ welcome?: string }>;
 }) {
-  const memberId = await currentMemberId();
-  if (!memberId) redirect("/");
-
-  const member = await findById(memberId);
+  const member = await currentMember();
   if (!member) redirect("/");
 
   const card = await getCard(member);
