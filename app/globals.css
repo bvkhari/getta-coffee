@@ -66,12 +66,12 @@ html, body {
 
 /* ---------- brand ---------- */
 
-.mark { text-align: center; }
 .wordmark {
   display: block;
   width: min(176px, 48%);
   height: auto;
-  margin: 0 auto;
+  /* Holds the gap the removed eyebrow used to occupy. */
+  margin: 0 auto 22px;
 }
 .eyebrow {
   font-family: var(--display);
