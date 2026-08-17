@@ -62,7 +62,14 @@ export function Slots({ stamps }: { stamps: number }) {
   );
 }
 
-export function Progress({ stamps }: { stamps: number }) {
+export function Progress({
+  stamps,
+  redeemed = 0,
+}: {
+  stamps: number;
+  /** Past redemptions — an existing member is owed a "next", not a "first". */
+  redeemed?: number;
+}) {
   if (stamps >= STAMPS_PER_REWARD) {
     return (
       <p className="progress">
@@ -73,7 +80,8 @@ export function Progress({ stamps }: { stamps: number }) {
   if (stamps === 0) {
     return (
       <p className="progress">
-        <em>{STAMPS_PER_REWARD} receipts</em> to your first free drink.
+        <em>{STAMPS_PER_REWARD} receipts</em> to your{" "}
+        {redeemed > 0 ? "next" : "first"} free drink.
       </p>
     );
   }

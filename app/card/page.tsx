@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getCard, findById, STAMPS_PER_REWARD } from "@/lib/members";
+import { getCard, findById } from "@/lib/members";
 import { currentMemberId } from "@/lib/session";
 import { logOut } from "../actions";
 import { Eyebrow, Footer, Progress, Slots, formatVisit } from "../components";
@@ -43,7 +43,7 @@ export default async function CardPage({
 
         <div className="stampcard">
           <Slots stamps={card.stamps} />
-          <Progress stamps={card.stamps} />
+          <Progress stamps={card.stamps} redeemed={card.redeemed} />
         </div>
 
         {card.rewardsReady > 0 ? (
@@ -92,6 +92,4 @@ export default async function CardPage({
   );
 }
 
-export const metadata = {
-  title: `Getta Rewards — ${STAMPS_PER_REWARD} receipts, 1 free drink`,
-};
+export const metadata = { title: "My Card · Getta Rewards" };
