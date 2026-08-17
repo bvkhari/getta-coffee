@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { currentMember, getCard } from "@/lib/members";
 import { logOut } from "../actions";
 import { Eyebrow, Footer, Progress, Slots, formatVisit } from "../components";
+import { RefreshButton } from "./refresh-button";
 
 export const dynamic = "force-dynamic";
 
@@ -76,11 +77,17 @@ export default async function CardPage({
           )}
         </div>
 
-        <form action={logOut} style={{ margin: "26px auto 0" }}>
-          <button className="link" type="submit">
-            Sign out
-          </button>
-        </form>
+        <div className="card-actions">
+          <RefreshButton />
+          <span className="card-actions-sep" aria-hidden="true">
+            ·
+          </span>
+          <form action={logOut}>
+            <button className="link" type="submit">
+              Sign out
+            </button>
+          </form>
+        </div>
 
         <Footer />
       </main>
