@@ -15,12 +15,12 @@ export function RefreshButton() {
 
   return (
     <button
-      className="link"
+      className="btn ghost"
       type="button"
       disabled={pending}
       onClick={() => startTransition(() => router.refresh())}
     >
-      {pending ? "Checking…" : "Refresh"}
+      {pending ? "CHECKING…" : "REFRESH"}
     </button>
   );
 }
