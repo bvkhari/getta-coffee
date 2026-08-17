@@ -11,9 +11,16 @@ import {
   undoLastStamp,
 } from "@/lib/members";
 import {
+  createLocation,
+  findActiveLocation,
+  listLocations,
+  setLocationActive,
+} from "@/lib/locations";
+import {
   endStaffSession,
   isStaff,
   passcodeMatches,
+  staffPlace,
   startStaffSession,
 } from "@/lib/session";
 
@@ -23,14 +30,28 @@ async function requireStaff(): Promise<void> {
   if (!(await isStaff())) redirect("/staff");
 }
 
+/** An event name is a label, not a paragraph. Long enough for "Aidilfitri Bazaar". */
+const EVENT_NAME_MAX = 40;
+
 export async function unlock(
   _prev: StaffState,
   form: FormData,
 ): Promise<StaffState> {
+  // The posted place is checked against an active row rather than trusted, so a
+  // stale tab cannot unlock as a branch that has since closed.
+  const place = await findActiveLocation(String(form.get("place") ?? ""));
+  if (!place) return { error: "Pick a location first." };
+
   const given = String(form.get("passcode") ?? "");
   if (!passcodeMatches(given)) return { error: "Wrong passcode." };
 
-  await startStaffSession();
+  const event = String(form.get("event") ?? "")
+    .trim()
+    .slice(0, EVENT_NAME_MAX);
+
+  await startStaffSession(
+    place.asks_event && event ? `${place.name} · ${event}` : place.name,
+  );
   redirect("/staff/lookup");
 }
 
@@ -61,7 +82,9 @@ export async function stamp(form: FormData): Promise<void> {
 
   let open: number;
   try {
-    open = await addStamp(memberId);
+    // The place comes from the signed cookie, never the form, so a tampered
+    // request cannot credit a stamp to a branch it wasn't taken at.
+    open = await addStamp(memberId, await staffPlace());
   } catch (error) {
     // A double-tap lands here; the first stamp already went through, so send
     // staff back to the member rather than showing a failure.
@@ -93,6 +116,51 @@ export async function redeem(form: FormData): Promise<void> {
   const memberId = String(form.get("memberId") ?? "");
   await redeemReward(memberId);
   redirect(`/staff/member/${memberId}?done=redeemed`);
+}
+
+export async function addLocation(form: FormData): Promise<void> {
+  await requireStaff();
+
+  const name = String(form.get("name") ?? "").trim();
+  if (name.length < 1 || name.length > 40) {
+    redirect("/staff/locations?bad=1");
+  }
+
+  try {
+    await createLocation(name, form.get("asksEvent") === "on");
+  } catch (error) {
+    if (isUniqueViolation(error)) redirect("/staff/locations?taken=1");
+    throw error;
+  }
+
+  redirect("/staff/locations?added=1");
+}
+
+/** Close a branch or reopen it. Nothing is ever deleted — see lib/locations.ts. */
+export async function toggleLocation(form: FormData): Promise<void> {
+  await requireStaff();
+
+  const id = String(form.get("id") ?? "");
+  const active = form.get("active") === "1";
+
+  // Closing the last open location would leave nothing to unlock as, and the
+  // only way back would be the database.
+  if (!active && (await listLocations(true)).length < 2) {
+    redirect("/staff/locations?last=1");
+  }
+
+  await setLocationActive(id, active);
+
+  redirect(`/staff/locations?${active ? "reopened" : "closed"}=1`);
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: unknown }).code === "23505"
+  );
 }
 
 function isDuplicate(error: unknown): boolean {

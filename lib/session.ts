@@ -71,8 +71,16 @@ export function passcodeMatches(given: string): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-export async function startStaffSession(): Promise<void> {
-  (await cookies()).set(STAFF_COOKIE, sign("staff"), {
+/**
+ * Unlocking picks a place, and the session carries it for the whole shift, so
+ * stamps get tagged without a barista choosing per customer. The cookie is
+ * already signed, which means the place cannot be edited into something else.
+ *
+ * The value is URL-encoded because a place can contain spaces and a "·", and
+ * whether the cookie layer escapes those is not worth depending on.
+ */
+export async function startStaffSession(place: string): Promise<void> {
+  (await cookies()).set(STAFF_COOKIE, sign(`staff:${encodeURIComponent(place)}`), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -81,8 +89,16 @@ export async function startStaffSession(): Promise<void> {
   });
 }
 
+/** The place this shift is stamping from, or null when not unlocked. */
+export async function staffPlace(): Promise<string | null> {
+  const value = unsign((await cookies()).get(STAFF_COOKIE)?.value);
+  return value?.startsWith("staff:")
+    ? decodeURIComponent(value.slice("staff:".length))
+    : null;
+}
+
 export async function isStaff(): Promise<boolean> {
-  return unsign((await cookies()).get(STAFF_COOKIE)?.value) === "staff";
+  return (await staffPlace()) !== null;
 }
 
 export async function endStaffSession(): Promise<void> {

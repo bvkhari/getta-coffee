@@ -61,10 +61,13 @@ export default async function CardPage({
             </p>
           ) : (
             <ul>
-              {card.visits.map((iso, i) => (
-                <li key={i}>
-                  <span>Receipt collected</span>
-                  <span>{formatVisit(iso)}</span>
+              {card.visits.map((visit) => (
+                <li key={visit.at}>
+                  <span>
+                    Receipt collected
+                    {visit.location ? ` · ${visit.location}` : ""}
+                  </span>
+                  <span>{formatVisit(visit.at)}</span>
                 </li>
               ))}
               {card.redeemed > 0 ? (

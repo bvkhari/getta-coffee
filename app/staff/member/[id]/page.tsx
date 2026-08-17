@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { canUndo, findById, getCard, STAMPS_PER_REWARD } from "@/lib/members";
-import { isStaff } from "@/lib/session";
-import { Slots } from "../../../components";
+import { staffPlace } from "@/lib/session";
+import { Slots, formatVisit } from "../../../components";
 import { lockUp, stamp, undoStamp } from "../../actions";
 import { RedeemButton } from "./redeem-button";
 
@@ -51,7 +51,8 @@ export default async function StaffMemberPage({
     expired?: string;
   }>;
 }) {
-  if (!(await isStaff())) redirect("/staff");
+  const place = await staffPlace();
+  if (!place) redirect("/staff");
 
   const { id } = await params;
   const { done, dup, undone, expired } = await searchParams;
@@ -75,7 +76,7 @@ export default async function StaffMemberPage({
     <div className="shell dark">
       <main className="screen">
         <div className="staffbar">
-          <span className="who">Staff · Getta Coffee</span>
+          <span className="who">Staff · {place}</span>
           <form action={lockUp}>
             <button className="link" type="submit" style={{ padding: 0 }}>
               Lock
@@ -157,6 +158,20 @@ export default async function StaffMemberPage({
               Undo last stamp
             </button>
           </form>
+        ) : null}
+
+        {card.visits.length > 0 ? (
+          <div className="hist">
+            <h2>Recent stamps</h2>
+            <ul>
+              {card.visits.slice(0, 5).map((visit) => (
+                <li key={visit.at}>
+                  <span>{visit.location ?? "Receipt collected"}</span>
+                  <span>{formatVisit(visit.at)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
       </main>
     </div>
