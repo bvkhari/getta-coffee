@@ -69,8 +69,10 @@ export async function stamp(form: FormData): Promise<void> {
     throw error;
   }
 
+  // Land back on the customer's card, not the keypad: if that stamp completed
+  // the card, REDEEM is right there without retyping the number.
   redirect(
-    `/staff/done/${memberId}?kind=${
+    `/staff/member/${memberId}?done=${
       open >= STAMPS_PER_REWARD ? "reward" : "stamp"
     }`,
   );
@@ -90,7 +92,7 @@ export async function redeem(form: FormData): Promise<void> {
 
   const memberId = String(form.get("memberId") ?? "");
   await redeemReward(memberId);
-  redirect(`/staff/done/${memberId}?kind=redeemed`);
+  redirect(`/staff/member/${memberId}?done=redeemed`);
 }
 
 function isDuplicate(error: unknown): boolean {

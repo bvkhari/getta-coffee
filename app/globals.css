@@ -507,67 +507,44 @@ input.t:focus {
   color: var(--dark-muted);
 }
 
-/* ---------- staff confirmation ---------- */
+/* ---------- staff confirmation banner ---------- */
 
-/* Green carries white type; gold is too light for it, so gold flips to dark
-   type — the same treatment the gold button already uses. */
-.confirm {
+/* Sits on the customer's card instead of on a screen of its own, so staff see
+   what happened and what to do next together, with no timer to wait out.
+   Green carries white type; gold is too light for it and flips to dark type,
+   the same treatment the gold button already uses. */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 15px 18px;
+  border-radius: var(--r-card);
   background: var(--go);
-  --on: #FFFFFF;
-  --on-dim: #EDF3EE;
-  --on-wash: rgba(255,255,255,.22);
-  --on-edge: rgba(255,255,255,.55);
+  color: #FFFFFF;
+  animation: pop .4s var(--spring) both;
 }
-.confirm.reward {
-  background: var(--gold);
-  --on: #2A1B06;
-  --on-dim: #322007;
-  --on-wash: rgba(42,27,6,.14);
-  --on-edge: rgba(42,27,6,.42);
-}
-.confirm .screen { flex: 1; display: grid; place-items: center; text-align: center; }
-.tick {
-  width: 84px; height: 84px;
+.banner.gold { background: var(--gold); color: #2A1B06; }
+.banner-tick {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  display: grid; place-items: center;
-  margin: 0 auto 24px;
-  background: var(--on-wash);
-  color: var(--on);
-  animation: pop .45s var(--spring) both;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.24);
 }
-.confirm .msg {
+.banner.gold .banner-tick { background: rgba(42,27,6,.18); }
+.banner-msg {
+  display: block;
   font-family: var(--display);
   font-weight: 800;
   font-stretch: 90%;
-  font-size: 34px;
-  letter-spacing: -.015em;
-  margin: 0;
-  color: var(--on);
+  font-size: 19px;
+  letter-spacing: -.01em;
 }
-.confirm .who2 { margin: 10px 0 0; font-size: 15px; color: var(--on-dim); }
+.banner-sub { display: block; margin-top: 2px; font-size: 13px; }
 
-.confirm-actions {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-.btn.oncolor {
-  width: auto;
-  min-width: 172px;
-  background: var(--on-wash);
-  color: var(--on);
-  border: 1px solid var(--on-edge);
-}
-.btn.oncolor:hover { background: var(--on-edge); }
-.oncolor-link {
-  font-size: 13px;
-  color: var(--on-dim);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.confirm :focus-visible { outline-color: var(--on); }
 
 /* Armed state for the two-tap redeem guard. */
 .btn.stop { background: var(--stop); color: #FBEFE2; }
