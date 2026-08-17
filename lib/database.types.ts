@@ -25,14 +25,34 @@ export type Database = {
           member_id: string;
           created_at: string;
           reward_id: string | null;
+          location: string | null;
         };
         Insert: {
           id?: string;
           member_id: string;
           created_at?: string;
           reward_id?: string | null;
+          location?: string | null;
         };
         Update: { reward_id?: string | null };
+        Relationships: [];
+      };
+      locations: {
+        Row: {
+          id: string;
+          name: string;
+          active: boolean;
+          asks_event: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          active?: boolean;
+          asks_event?: boolean;
+          created_at?: string;
+        };
+        Update: { name?: string; active?: boolean; asks_event?: boolean };
         Relationships: [];
       };
       rewards: {
@@ -46,7 +66,10 @@ export type Database = {
        schema has no views. */
     Views: Record<never, never>;
     Functions: {
-      add_stamp: { Args: { p_member: string }; Returns: number };
+      add_stamp: {
+        Args: { p_member: string; p_location?: string | null };
+        Returns: number;
+      };
       redeem_reward: { Args: { p_member: string }; Returns: string };
       undo_last_stamp: {
         Args: { p_member: string; p_within?: string };

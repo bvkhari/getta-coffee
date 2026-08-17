@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { listLocations } from "@/lib/locations";
 import { isStaff } from "@/lib/session";
 import { PasscodeForm } from "./passcode-form";
 
@@ -8,6 +9,8 @@ export const metadata = { title: "Getta Staff" };
 
 export default async function StaffGatePage() {
   if (await isStaff()) redirect("/staff/lookup");
+
+  const places = await listLocations(true);
 
   return (
     <div className="shell dark">
@@ -19,9 +22,10 @@ export default async function StaffGatePage() {
           Counter access
         </p>
         <p className="center-note" style={{ marginBottom: 26 }}>
-          Enter the shop passcode to add stamps and redeem free drinks.
+          Pick where you are, then enter the shop passcode. Stamps you add today
+          are tagged with that location.
         </p>
-        <PasscodeForm />
+        <PasscodeForm places={places} />
       </main>
     </div>
   );

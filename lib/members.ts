@@ -17,7 +17,8 @@ export type Card = {
   rewardsReady: number;
   /** Free drinks taken in the past. */
   redeemed: number;
-  visits: string[];
+  /** Newest first. `location` is null for stamps taken before tagging existed. */
+  visits: { at: string; location: string | null }[];
 };
 
 /** Strips formatting so "0123 456 789" and "0123456789" are the same member. */
@@ -79,7 +80,7 @@ export async function getCard(member: Member): Promise<Card> {
   const [open, past] = await Promise.all([
     db()
       .from("stamps")
-      .select("created_at")
+      .select("created_at, location")
       .eq("member_id", member.id)
       .is("reward_id", null)
       .order("created_at", { ascending: false }),
@@ -98,12 +99,21 @@ export async function getCard(member: Member): Promise<Card> {
     stamps,
     rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
     redeemed: past.data.length,
-    visits: open.data.map((row) => row.created_at as string),
+    visits: open.data.map((row) => ({
+      at: row.created_at as string,
+      location: row.location as string | null,
+    })),
   };
 }
 
-export async function addStamp(memberId: string): Promise<number> {
-  const { data, error } = await db().rpc("add_stamp", { p_member: memberId });
+export async function addStamp(
+  memberId: string,
+  location: string | null,
+): Promise<number> {
+  const { data, error } = await db().rpc("add_stamp", {
+    p_member: memberId,
+    p_location: location,
+  });
   if (error) throw error;
   return data as unknown as number;
 }
@@ -118,7 +128,9 @@ const UNDO_WINDOW_MS = 10 * 60 * 1000;
 /** True when the newest stamp is still inside the undo window. */
 export function canUndo(card: Card): boolean {
   const newest = card.visits[0];
-  return newest ? Date.now() - new Date(newest).getTime() < UNDO_WINDOW_MS : false;
+  return newest
+    ? Date.now() - new Date(newest.at).getTime() < UNDO_WINDOW_MS
+    : false;
 }
 
 /** Removes the newest open stamp. Returns false if there was nothing to remove. */
