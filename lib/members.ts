@@ -11,7 +11,6 @@ export type Member = {
 };
 
 export type Card = {
-  member: Member;
   /** Stamps counting toward the next free drink. Can exceed the threshold. */
   stamps: number;
   /** Free drinks available to redeem right now. */
@@ -30,27 +29,24 @@ export function isValidPhone(phone: string): boolean {
   return /^[0-9]{7,15}$/.test(phone);
 }
 
-export async function findByPhone(phone: string): Promise<Member | null> {
+const MEMBER_COLS = "id, name, phone, created_at";
+
+async function findMember(
+  column: "id" | "phone",
+  value: string,
+): Promise<Member | null> {
   const { data, error } = await db()
     .from("members")
-    .select("id, name, phone, created_at")
-    .eq("phone", phone)
+    .select(MEMBER_COLS)
+    .eq(column, value)
     .maybeSingle();
 
   if (error) throw error;
   return (data as Member | null) ?? null;
 }
 
-export async function findById(id: string): Promise<Member | null> {
-  const { data, error } = await db()
-    .from("members")
-    .select("id, name, phone, created_at")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) throw error;
-  return (data as Member | null) ?? null;
-}
+export const findByPhone = (phone: string) => findMember("phone", phone);
+export const findById = (id: string) => findMember("id", id);
 
 /**
  * The signed-in member, or null.
@@ -72,7 +68,7 @@ export async function createMember(
   const { data, error } = await db()
     .from("members")
     .insert({ name, phone })
-    .select("id, name, phone, created_at")
+    .select(MEMBER_COLS)
     .single();
 
   if (error) throw error;
@@ -99,7 +95,6 @@ export async function getCard(member: Member): Promise<Card> {
   const stamps = open.data.length;
 
   return {
-    member,
     stamps,
     rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
     redeemed: past.data.length,
@@ -118,7 +113,7 @@ export async function addStamp(memberId: string): Promise<number> {
  * slip after the customer has walked away, short enough that it isn't a way to
  * quietly remove stamps later.
  */
-export const UNDO_WINDOW_MS = 10 * 60 * 1000;
+const UNDO_WINDOW_MS = 10 * 60 * 1000;
 
 /** True when the newest stamp is still inside the undo window. */
 export function canUndo(card: Card): boolean {
