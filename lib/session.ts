@@ -1,0 +1,90 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+import { cookies } from "next/headers";
+
+const MEMBER_COOKIE = "getta_member";
+const STAFF_COOKIE = "getta_staff";
+const THIRTY_DAYS = 60 * 60 * 24 * 30;
+const TWELVE_HOURS = 60 * 60 * 12;
+
+function secret(): string {
+  const value = process.env.SESSION_SECRET;
+  if (!value || value.length < 32) {
+    throw new Error(
+      "SESSION_SECRET must be set to at least 32 characters — see README.",
+    );
+  }
+  return value;
+}
+
+function sign(value: string): string {
+  const mac = createHmac("sha256", secret()).update(value).digest("base64url");
+  return `${value}.${mac}`;
+}
+
+function unsign(token: string | undefined): string | null {
+  if (!token) return null;
+  const cut = token.lastIndexOf(".");
+  if (cut < 1) return null;
+
+  const value = token.slice(0, cut);
+  const given = Buffer.from(token.slice(cut + 1));
+  const want = Buffer.from(
+    createHmac("sha256", secret()).update(value).digest("base64url"),
+  );
+
+  if (given.length !== want.length || !timingSafeEqual(given, want)) return null;
+  return value;
+}
+
+/* ---------- member session ---------- */
+
+export async function startMemberSession(memberId: string): Promise<void> {
+  (await cookies()).set(MEMBER_COOKIE, sign(memberId), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: THIRTY_DAYS,
+  });
+}
+
+export async function currentMemberId(): Promise<string | null> {
+  return unsign((await cookies()).get(MEMBER_COOKIE)?.value);
+}
+
+export async function endMemberSession(): Promise<void> {
+  (await cookies()).delete(MEMBER_COOKIE);
+}
+
+/* ---------- staff session ---------- */
+
+/**
+ * One shared passcode unlocks the counter screen on the shop's own device.
+ * Compared in constant time so the check does not leak the passcode's prefix.
+ */
+export function passcodeMatches(given: string): boolean {
+  const want = process.env.STAFF_PASSCODE;
+  if (!want) throw new Error("STAFF_PASSCODE is not set — see README.");
+
+  const a = Buffer.from(given);
+  const b = Buffer.from(want);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+export async function startStaffSession(): Promise<void> {
+  (await cookies()).set(STAFF_COOKIE, sign("staff"), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/staff",
+    maxAge: TWELVE_HOURS,
+  });
+}
+
+export async function isStaff(): Promise<boolean> {
+  return unsign((await cookies()).get(STAFF_COOKIE)?.value) === "staff";
+}
+
+export async function endStaffSession(): Promise<void> {
+  (await cookies()).delete(STAFF_COOKIE);
+}

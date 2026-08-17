@@ -1,0 +1,1086 @@
+<title>Getta Rewards</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
+
+<style>
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  :root {
+    --ivory:        #FBF4E9;
+    --ivory-deep:   #F1E3CC;
+    --card:         #FFFCF6;
+    --card-sunk:    #F7EEDF;
+    --maroon:       #6B2118;
+    --maroon-deep:  #4E1710;
+    --maroon-soft:  #8C3A2A;
+    --espresso:     #2C1410;
+    --muted:        #9C7C68;
+    --line:         #E7D8C2;
+    --gold:         #B5822F;
+    --gold-lift:    #F3E2BE;
+
+    --dark:         #241009;
+    --dark-elev:    #34180E;
+    --dark-line:    #4A2718;
+    --dark-text:    #F6EADA;
+    --dark-muted:   #B08D74;
+    --go:           #3F7A4F;
+
+    --display: -apple-system, "SF Pro Display", "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+    --body: -apple-system, "SF Pro Text", "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+
+    --r-card: 22px;
+    --r-field: 13px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+    --spring: cubic-bezier(.34,1.56,.64,1);
+  }
+
+  body {
+    margin: 0;
+    background: var(--dark);
+    color: var(--espresso);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ---------- prototype chrome (not part of the product) ---------- */
+
+  .proto {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    background: #170905;
+    border-bottom: 1px solid var(--dark-line);
+  }
+  .proto-tag {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    color: var(--dark-muted);
+    white-space: nowrap;
+  }
+  .seg {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    background: #2A1209;
+    border-radius: 999px;
+  }
+  .seg button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--dark-muted);
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s var(--ease), color .2s var(--ease);
+  }
+  .seg button[aria-pressed="true"] { background: var(--maroon); color: #FBEFE2; }
+  .proto-reset {
+    margin-left: auto;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--dark-muted);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 2px;
+  }
+  .proto-reset:hover { color: var(--dark-text); }
+  @media (max-width: 460px) {
+    .proto { gap: 10px; padding: 9px 12px; }
+    .proto-tag { display: none; }
+    .proto-reset { font-size: 10px; }
+  }
+
+  /* ---------- phone frame ---------- */
+
+  .stage {
+    display: flex;
+    justify-content: center;
+    padding: 26px 16px 40px;
+  }
+  .phone {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    min-height: 748px;
+    border-radius: 34px;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 60% at 50% 0%, #FEFAF3 0%, var(--ivory) 45%, var(--ivory-deep) 100%);
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06);
+    display: flex;
+    flex-direction: column;
+  }
+  .phone.dark {
+    background: radial-gradient(120% 60% at 50% 0%, #38190E 0%, var(--dark) 60%);
+    color: var(--dark-text);
+  }
+
+  @media (max-width: 460px) {
+    .stage { padding: 0; }
+    .phone { max-width: none; border-radius: 0; min-height: calc(100vh - 45px); box-shadow: none; }
+  }
+
+  /* ---------- screens ---------- */
+
+  .screen { display: none; flex: 1; flex-direction: column; padding: 30px 24px 26px; }
+  .screen.on { display: flex; animation: enter .34s var(--ease) both; }
+  @keyframes enter { from { opacity: 0; transform: translateY(10px); } }
+
+  /* ---------- brand ---------- */
+
+  .mark { text-align: center; }
+  .wordmark {
+    font-family: var(--display);
+    font-weight: 800;
+    font-stretch: 90%;
+    letter-spacing: .01em;
+    line-height: .86;
+    font-size: 30px;
+    color: var(--maroon);
+    margin: 0;
+  }
+  .dark .wordmark { color: #E9C9AE; }
+  .wordmark sup { font-size: .34em; vertical-align: super; font-weight: 700; }
+  .eyebrow {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 14px 0 0;
+  }
+  .dark .eyebrow { color: var(--dark-muted); }
+
+  h1.hero {
+    font-family: var(--display);
+    font-weight: 800;
+    font-stretch: 90%;
+    font-size: 40px;
+    line-height: 1.02;
+    letter-spacing: -.02em;
+    color: var(--maroon);
+    text-wrap: balance;
+    margin: 12px 0 0;
+    text-align: center;
+  }
+  .sub {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* ---------- card + tabs ---------- */
+
+  .sheet {
+    margin-top: 26px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: 0 18px 34px -22px rgba(76,26,16,.45);
+    padding: 8px 8px 22px;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--card-sunk);
+    border-radius: 15px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .tabs button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    color: var(--muted);
+    padding: 13px 4px;
+    border-radius: 11px;
+    cursor: pointer;
+    transition: background .22s var(--ease), color .22s var(--ease), box-shadow .22s var(--ease);
+  }
+  .tabs button[aria-selected="true"] {
+    background: var(--maroon);
+    color: #FBEFE2;
+    box-shadow: 0 6px 14px -6px rgba(107,33,24,.8);
+  }
+
+  .fields { padding: 22px 14px 0; display: flex; flex-direction: column; gap: 18px; }
+  label.f {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  input.t {
+    font-family: var(--body);
+    font-size: 16px;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--espresso);
+    background: #FFFEFB;
+    border: 1px solid var(--line);
+    border-radius: var(--r-field);
+    padding: 15px 16px;
+    width: 100%;
+    transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  input.t::placeholder { color: #C6AF9B; }
+  input.t:focus {
+    outline: none;
+    border-color: var(--maroon-soft);
+    box-shadow: 0 0 0 3px rgba(140,58,42,.14);
+  }
+
+  .btn {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    color: #FBEFE2;
+    background: var(--maroon);
+    padding: 17px 18px;
+    border-radius: var(--r-field);
+    cursor: pointer;
+    transition: transform .12s var(--ease), background .2s var(--ease);
+  }
+  .btn:hover { background: var(--maroon-deep); }
+  .btn:active { transform: scale(.985); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--maroon);
+    border: 1px solid var(--line);
+  }
+  .btn.ghost:hover { background: var(--card-sunk); }
+  .btn.gold { background: var(--gold); color: #2A1B06; }
+  .btn.gold:hover { background: #9E7128; }
+  .btn.go { background: var(--go); }
+  .btn.go:hover { background: #33633F; }
+  .btn.big { font-size: 15px; padding: 22px 18px; }
+
+  :focus-visible { outline: 2px solid var(--maroon-soft); outline-offset: 2px; }
+  .dark :focus-visible { outline-color: #D9A77F; }
+
+  .foot {
+    margin-top: auto;
+    padding-top: 26px;
+    text-align: center;
+    font-size: 11px;
+    font-style: italic;
+    color: #C0A691;
+  }
+  .dark .foot { color: #6F4B36; }
+
+  .link {
+    appearance: none;
+    border: 0;
+    background: none;
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .dark .link { color: var(--dark-muted); }
+
+  /* ---------- stamp card ---------- */
+
+  .member {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .member .name {
+    font-family: var(--display);
+    font-weight: 800;
+    font-stretch: 90%;
+    font-size: 26px;
+    letter-spacing: -.015em;
+    color: var(--espresso);
+    margin: 0;
+  }
+  .dark .member .name { color: var(--dark-text); }
+  .member .since { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .dark .member .since { color: var(--dark-muted); }
+
+  .stampcard {
+    margin-top: 18px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 26px 20px 24px;
+    box-shadow: 0 18px 34px -22px rgba(76,26,16,.45);
+  }
+  .dark .stampcard { background: var(--dark-elev); border-color: var(--dark-line); }
+
+  .slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+  .slot {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 1.5px dashed #DCC9AF;
+    background: #FDF8EF;
+    color: transparent;
+  }
+  .dark .slot { border-color: #573020; background: #2B1309; }
+  .slot svg { width: 62%; height: 62%; }
+  .slot.filled {
+    border-style: solid;
+    border-color: transparent;
+    background: var(--maroon);
+    color: #EFD9C4;
+    animation: land .42s var(--spring) both;
+  }
+  .slot.filled.gold { background: var(--gold); color: #FFF6E2; }
+  @keyframes land { from { transform: scale(.55); opacity: 0; } }
+
+  .progress {
+    margin: 20px 0 0;
+    text-align: center;
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--espresso);
+  }
+  .dark .progress { color: var(--dark-text); }
+  .progress em { font-style: normal; color: var(--maroon); }
+  .dark .progress em { color: #E9A87C; }
+
+  .hist { margin-top: 24px; }
+  .hist h2 {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .hist ul { list-style: none; margin: 0; padding: 0; }
+  .hist li {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 2px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--espresso);
+    font-variant-numeric: tabular-nums;
+  }
+  .hist li span:last-child { color: var(--muted); }
+  .hist .none {
+    border-top: 1px solid var(--line);
+    padding: 18px 2px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- reward ---------- */
+
+  .voucher {
+    margin-top: 24px;
+    background: linear-gradient(170deg, #FFFBF0, var(--gold-lift));
+    border: 1px solid #E3CB9B;
+    border-radius: var(--r-card);
+    padding: 30px 22px 26px;
+    text-align: center;
+    box-shadow: 0 20px 40px -24px rgba(120,84,20,.6);
+    animation: pop .5s var(--spring) both;
+  }
+  @keyframes pop { from { transform: scale(.92); opacity: 0; } }
+  .voucher .kicker {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: #8A6420;
+  }
+  .voucher .what {
+    font-family: var(--display);
+    font-weight: 800;
+    font-stretch: 90%;
+    font-size: 34px;
+    line-height: 1.02;
+    letter-spacing: -.02em;
+    color: #5C3F0E;
+    margin: 10px 0 0;
+  }
+  .perf {
+    margin: 22px -22px;
+    border-top: 2px dashed #E0C795;
+  }
+  .code {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: .22em;
+    color: #5C3F0E;
+    font-variant-numeric: tabular-nums;
+  }
+  .voucher .note { margin: 10px 0 0; font-size: 12px; color: #8A6420; }
+
+  /* ---------- staff ---------- */
+
+  .staffbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--dark-line);
+  }
+  .staffbar .who {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--dark-muted);
+  }
+  .readout {
+    margin: 30px 0 22px;
+    text-align: center;
+    font-family: var(--display);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--dark-text);
+    font-variant-numeric: tabular-nums;
+    min-height: 40px;
+  }
+  .readout.empty {
+    color: #7A4E36;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    line-height: 40px;
+  }
+
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pad button {
+    appearance: none;
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark-text);
+    background: var(--dark-elev);
+    border: 1px solid var(--dark-line);
+    border-radius: 15px;
+    padding: 18px 0;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+    transition: background .14s var(--ease), transform .1s var(--ease);
+  }
+  .pad button:hover { background: #422011; }
+  .pad button:active { transform: scale(.96); }
+  .pad button.util { font-size: 13px; letter-spacing: .1em; color: var(--dark-muted); }
+
+  .err {
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: #E4907A;
+    min-height: 18px;
+  }
+
+  .found {
+    margin-top: 26px;
+    background: var(--dark-elev);
+    border: 1px solid var(--dark-line);
+    border-radius: var(--r-card);
+    padding: 26px 20px;
+    text-align: center;
+  }
+  .found .nm {
+    font-family: var(--display);
+    font-weight: 800;
+    font-stretch: 90%;
+    font-size: 30px;
+    letter-spacing: -.015em;
+    margin: 0;
+    color: var(--dark-text);
+  }
+  .found .ph { margin: 6px 0 0; font-size: 13px; color: var(--dark-muted); font-variant-numeric: tabular-nums; }
+  .found .slots { margin-top: 22px; }
+  .found .count {
+    margin: 18px 0 0;
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--dark-muted);
+  }
+
+  .stack { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+  .dark .btn.ghost { color: #E9C9AE; border-color: var(--dark-line); }
+  .dark .btn.ghost:hover { background: var(--dark-elev); }
+
+  #s-confirm { background: var(--go); }
+  #s-confirm.reward { background: var(--gold); }
+  .done { flex: 1; display: grid; place-items: center; text-align: center; }
+  .tick {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    margin: 0 auto 24px;
+    background: rgba(255,255,255,.2);
+    color: #FFFFFF;
+    animation: pop .45s var(--spring) both;
+  }
+  .done .msg {
+    font-family: var(--display);
+    font-weight: 800;
+    font-stretch: 90%;
+    font-size: 34px;
+    letter-spacing: -.015em;
+    margin: 0;
+    color: #FFFFFF;
+  }
+  .done .who2 { margin: 10px 0 0; font-size: 15px; color: rgba(255,255,255,.82); }
+
+  .center-note { text-align: center; font-size: 13px; color: var(--muted); line-height: 1.55; margin: 14px 0 0; }
+  .dark .center-note { color: var(--dark-muted); }
+
+  .hint {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    background: rgba(255,255,255,.4);
+  }
+  .dark .hint { border-color: var(--dark-line); color: var(--dark-muted); background: rgba(0,0,0,.15); }
+  .hint b { color: var(--espresso); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .dark .hint b { color: var(--dark-text); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  }
+</style>
+
+<div class="proto">
+  <span class="proto-tag">GETTA · MOCKUP</span>
+  <div class="seg" role="group" aria-label="Prototype mode">
+    <button type="button" data-mode="customer" aria-pressed="true">CUSTOMER</button>
+    <button type="button" data-mode="staff" aria-pressed="false">STAFF</button>
+  </div>
+  <button type="button" class="proto-reset" id="reset">Reset data</button>
+</div>
+
+<div class="stage">
+  <div class="phone" id="phone">
+
+    <!-- 1. entry -->
+    <section class="screen on" id="s-entry">
+      <div class="mark">
+        <p class="wordmark">GETTA<sup>®</sup><br>COFFEE</p>
+        <p class="eyebrow">Getta Rewards</p>
+      </div>
+      <h1 class="hero">Your coffee,<br>rewarded.</h1>
+      <p class="sub">Collect 5 receipts and enjoy 1 free drink.</p>
+
+      <div class="sheet">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="tab-join" aria-selected="true">JOIN</button>
+          <button type="button" role="tab" id="tab-login" aria-selected="false">MEMBER LOGIN</button>
+        </div>
+
+        <form class="fields" id="form-join">
+          <label class="f">Full name
+            <input class="t" type="text" id="join-name" placeholder="Enter your full name" autocomplete="name">
+          </label>
+          <label class="f">Phone number
+            <input class="t" type="tel" id="join-phone" placeholder="e.g. 0123456789" autocomplete="tel">
+          </label>
+          <button class="btn" type="submit">JOIN GETTA REWARDS</button>
+        </form>
+
+        <form class="fields" id="form-login" hidden>
+          <label class="f">Phone number
+            <input class="t" type="tel" id="login-phone" placeholder="e.g. 0123456789" autocomplete="tel">
+          </label>
+          <button class="btn" type="submit">SEND CODE</button>
+          <p class="err" id="login-err"></p>
+        </form>
+      </div>
+
+      <div class="hint">
+        Demo members — <b>0123456789</b> Sarah, 2 stamps · <b>0198765432</b> Marcus, 4 stamps ·
+        <b>0123456780</b> Dewi, reward ready · <b>0111222333</b> Aisha, brand new.
+      </div>
+
+      <p class="foot">Crafted with Care, Served with Quality</p>
+    </section>
+
+    <!-- 2. code -->
+    <section class="screen" id="s-code">
+      <div class="mark"><p class="eyebrow">Getta Rewards</p></div>
+      <h1 class="hero">Check your<br>messages.</h1>
+      <p class="sub">We sent a 4-digit code to <span id="code-phone"></span>.</p>
+
+      <div class="sheet">
+        <form class="fields" id="form-code">
+          <label class="f">Verification code
+            <input class="t" type="text" id="code-input" inputmode="numeric" maxlength="4" placeholder="0000" style="letter-spacing:.5em; text-align:center; font-size:22px;">
+          </label>
+          <button class="btn" type="submit">VERIFY</button>
+        </form>
+        <p class="center-note">Any 4 digits work in this mockup.</p>
+      </div>
+      <button class="link" data-go="s-entry" style="margin: 18px auto 0;">Use a different number</button>
+      <p class="foot">Crafted with Care, Served with Quality</p>
+    </section>
+
+    <!-- 3. joined -->
+    <section class="screen" id="s-joined">
+      <div class="mark"><p class="eyebrow">Welcome to Getta Rewards</p></div>
+      <h1 class="hero" id="joined-hero">You're in.</h1>
+      <p class="sub">Your card is open and waiting for its first stamp. Give your phone number at the counter on your next visit.</p>
+      <div class="stack">
+        <button class="btn" data-go="s-card">SEE MY CARD</button>
+      </div>
+      <p class="foot">Crafted with Care, Served with Quality</p>
+    </section>
+
+    <!-- 4. stamp card -->
+    <section class="screen" id="s-card">
+      <div class="mark"><p class="eyebrow">Getta Rewards</p></div>
+
+      <div class="member">
+        <p class="name" id="card-name">—</p>
+        <span class="since" id="card-phone"></span>
+      </div>
+
+      <div class="stampcard">
+        <div class="slots" id="card-slots"></div>
+        <p class="progress" id="card-progress"></p>
+      </div>
+
+      <div class="stack" id="card-actions"></div>
+
+      <div class="hist">
+        <h2>Visit history</h2>
+        <ul id="card-hist"></ul>
+        <p class="none" id="card-hist-none" hidden>No visits yet. Your first stamp lands the next time you order.</p>
+      </div>
+
+      <button class="link" data-go="s-entry" style="margin: 26px auto 0;">Sign out</button>
+      <p class="foot">Crafted with Care, Served with Quality</p>
+    </section>
+
+    <!-- 5. reward -->
+    <section class="screen" id="s-reward">
+      <div class="mark"><p class="eyebrow">Reward earned</p></div>
+
+      <div class="voucher">
+        <p class="kicker">Getta Rewards</p>
+        <p class="what">One free<br>drink.</p>
+        <div class="perf"></div>
+        <p class="code" id="reward-code">GC 4821</p>
+        <p class="note">Show this screen to staff to redeem.</p>
+      </div>
+
+      <p class="center-note">Earned after 5 receipts. Your card resets once the drink is poured.</p>
+
+      <div class="stack">
+        <button class="btn ghost" data-go="s-card">BACK TO MY CARD</button>
+      </div>
+      <p class="foot">Crafted with Care, Served with Quality</p>
+    </section>
+
+    <!-- 6. redeemed -->
+    <section class="screen" id="s-redeemed">
+      <div class="mark"><p class="eyebrow">Enjoy</p></div>
+      <h1 class="hero">Drink's on us.</h1>
+      <p class="sub">Your card is back to zero and counting again from your next receipt.</p>
+      <div class="stack">
+        <button class="btn" data-go="s-card">SEE MY CARD</button>
+      </div>
+      <p class="foot">Crafted with Care, Served with Quality</p>
+    </section>
+
+    <!-- 7. staff lookup -->
+    <section class="screen" id="s-lookup">
+      <div class="staffbar">
+        <span class="who">Staff · Getta Coffee</span>
+        <span class="who" id="staff-clock">—</span>
+      </div>
+      <p class="eyebrow" style="text-align:center; margin-top:26px;">Customer phone number</p>
+      <p class="readout empty" id="pad-readout">0000000000</p>
+      <div class="pad" id="pad"></div>
+      <p class="err" id="pad-err"></p>
+      <div class="stack">
+        <button class="btn big" id="pad-find">FIND CUSTOMER</button>
+      </div>
+    </section>
+
+    <!-- 8. staff found -->
+    <section class="screen" id="s-found">
+      <div class="staffbar">
+        <span class="who">Staff · Getta Coffee</span>
+        <button class="link" data-go="s-lookup" style="padding:0;">Cancel</button>
+      </div>
+
+      <div class="found">
+        <p class="nm" id="found-name">—</p>
+        <p class="ph" id="found-phone"></p>
+        <div class="slots" id="found-slots"></div>
+        <p class="count" id="found-count"></p>
+      </div>
+
+      <div class="stack" id="found-actions"></div>
+    </section>
+
+    <!-- 9. staff confirmation -->
+    <section class="screen" id="s-confirm">
+      <div class="done">
+        <div>
+          <div class="tick" id="confirm-tick">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <p class="msg" id="confirm-msg">Stamp added</p>
+          <p class="who2" id="confirm-who"></p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var GOAL = 5;
+
+  var BEAN = '<svg viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-28 12 12)">' +
+    '<ellipse cx="12" cy="12" rx="6.4" ry="9" fill="currentColor"/>' +
+    '<path d="M12 3.6C8.7 7.2 15.3 16.8 12 20.4" fill="none" stroke="rgba(107,33,24,.55)" stroke-width="1.7" stroke-linecap="round"/>' +
+    '</g></svg>';
+
+  function seed() {
+    return {
+      "0123456789": { name: "Sarah Chen", stamps: 2, joined: "Mar 2026", visits: ["12 Aug 2026", "29 Jul 2026"], redeemed: 0 },
+      "0198765432": { name: "Marcus Lee", stamps: 4, joined: "Jan 2026", visits: ["15 Aug 2026", "9 Aug 2026", "2 Aug 2026", "21 Jul 2026"], redeemed: 1 },
+      "0123456780": { name: "Dewi Putri", stamps: 5, joined: "Feb 2026", visits: ["16 Aug 2026", "11 Aug 2026", "6 Aug 2026", "30 Jul 2026", "24 Jul 2026"], redeemed: 0 },
+      "0111222333": { name: "Aisha Rahman", stamps: 0, joined: "Aug 2026", visits: [], redeemed: 0 }
+    };
+  }
+
+  var members = seed();
+  var me = null;      // phone of logged-in customer
+  var target = null;  // phone of customer at the counter
+  var pad = "";
+  var mode = "customer";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var phone = $("phone");
+
+  /* ---------- routing ---------- */
+
+  function show(id) {
+    var all = document.querySelectorAll(".screen");
+    for (var i = 0; i < all.length; i++) all[i].classList.remove("on");
+    $(id).classList.add("on");
+    phone.classList.toggle("dark", id === "s-lookup" || id === "s-found" || id === "s-confirm");
+    phone.scrollIntoView({ block: "nearest" });
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-go]");
+    if (!b) return;
+    var dest = b.getAttribute("data-go");
+    if (dest === "s-card") renderCard();
+    if (dest === "s-entry") me = null;
+    show(dest);
+  });
+
+  /* ---------- mode switch ---------- */
+
+  var segButtons = document.querySelectorAll(".seg button");
+  for (var i = 0; i < segButtons.length; i++) {
+    segButtons[i].addEventListener("click", function () {
+      mode = this.getAttribute("data-mode");
+      for (var j = 0; j < segButtons.length; j++) {
+        segButtons[j].setAttribute("aria-pressed", String(segButtons[j] === this));
+      }
+      if (mode === "staff") {
+        pad = ""; paint(); $("pad-err").textContent = "";
+        show("s-lookup");
+      } else {
+        show(me ? "s-card" : "s-entry");
+        if (me) renderCard();
+      }
+    });
+  }
+
+  $("reset").addEventListener("click", function () {
+    members = seed(); me = null; target = null; pad = "";
+    document.querySelector('.seg button[data-mode="customer"]').click();
+    show("s-entry");
+  });
+
+  /* ---------- tabs ---------- */
+
+  function tab(which) {
+    var join = which === "join";
+    $("tab-join").setAttribute("aria-selected", String(join));
+    $("tab-login").setAttribute("aria-selected", String(!join));
+    $("form-join").hidden = !join;
+    $("form-login").hidden = join;
+    $("login-err").textContent = "";
+  }
+  $("tab-join").addEventListener("click", function () { tab("join"); });
+  $("tab-login").addEventListener("click", function () { tab("login"); });
+
+  /* ---------- join / login ---------- */
+
+  function clean(v) { return (v || "").replace(/[^\d]/g, ""); }
+
+  $("form-join").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("join-name").value.trim() || "New Member";
+    var ph = clean($("join-phone").value) || ("07" + Math.floor(10000000 + Math.random() * 89999999));
+    if (!members[ph]) {
+      members[ph] = { name: name, stamps: 0, joined: "Aug 2026", visits: [], redeemed: 0 };
+    }
+    me = ph;
+    $("joined-hero").innerHTML = "Welcome,<br>" + members[ph].name.split(" ")[0] + ".";
+    $("join-name").value = ""; $("join-phone").value = "";
+    show("s-joined");
+  });
+
+  $("form-login").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var ph = clean($("login-phone").value);
+    if (!members[ph]) {
+      $("login-err").textContent = "No member found with that number. Try joining instead.";
+      return;
+    }
+    me = ph;
+    $("code-phone").textContent = ph;
+    $("code-input").value = "";
+    $("login-err").textContent = "";
+    show("s-code");
+  });
+
+  $("form-code").addEventListener("submit", function (e) {
+    e.preventDefault();
+    renderCard();
+    show("s-card");
+  });
+
+  /* ---------- stamps ---------- */
+
+  function slots(node, count, animateFrom) {
+    node.innerHTML = "";
+    for (var i = 0; i < GOAL; i++) {
+      var d = document.createElement("div");
+      d.className = "slot";
+      if (i < count) {
+        d.className = "slot filled" + (count >= GOAL ? " gold" : "");
+        d.innerHTML = BEAN;
+        if (animateFrom !== undefined && i < animateFrom) d.style.animation = "none";
+      }
+      node.appendChild(d);
+    }
+  }
+
+  /* ---------- customer card ---------- */
+
+  function renderCard() {
+    var m = members[me];
+    if (!m) { show("s-entry"); return; }
+
+    $("card-name").textContent = m.name;
+    $("card-phone").textContent = m.phone || me;
+
+    slots($("card-slots"), m.stamps, m.stamps);
+
+    var left = GOAL - m.stamps;
+    $("card-progress").innerHTML = m.stamps >= GOAL
+      ? "<em>Free drink ready.</em>"
+      : (m.stamps === 0
+          ? "<em>5 receipts</em> to your first free drink."
+          : "<em>" + left + " more</em> " + (left === 1 ? "receipt" : "receipts") + " to a free drink.");
+
+    var actions = $("card-actions");
+    actions.innerHTML = "";
+    if (m.stamps >= GOAL) {
+      var b = document.createElement("button");
+      b.className = "btn gold";
+      b.textContent = "VIEW MY FREE DRINK";
+      b.addEventListener("click", function () { show("s-reward"); });
+      actions.appendChild(b);
+    }
+
+    var ul = $("card-hist");
+    ul.innerHTML = "";
+    for (var i = 0; i < m.visits.length; i++) {
+      var li = document.createElement("li");
+      li.innerHTML = "<span>Receipt collected</span><span>" + m.visits[i] + "</span>";
+      ul.appendChild(li);
+    }
+    if (m.redeemed > 0) {
+      var li2 = document.createElement("li");
+      li2.innerHTML = "<span>Free drink redeemed</span><span>" + m.redeemed + "× to date</span>";
+      ul.appendChild(li2);
+    }
+    ul.hidden = m.visits.length === 0 && m.redeemed === 0;
+    $("card-hist-none").hidden = !ul.hidden;
+  }
+
+  /* ---------- staff keypad ---------- */
+
+  var keys = ["1","2","3","4","5","6","7","8","9","clear","0","del"];
+  var padEl = $("pad");
+  for (var k = 0; k < keys.length; k++) {
+    (function (key) {
+      var b = document.createElement("button");
+      b.type = "button";
+      if (key === "clear") { b.className = "util"; b.textContent = "CLEAR"; }
+      else if (key === "del") { b.className = "util"; b.textContent = "DELETE"; }
+      else b.textContent = key;
+      b.addEventListener("click", function () {
+        if (key === "clear") pad = "";
+        else if (key === "del") pad = pad.slice(0, -1);
+        else if (pad.length < 12) pad += key;
+        $("pad-err").textContent = "";
+        paint();
+      });
+      padEl.appendChild(b);
+    })(keys[k]);
+  }
+
+  function paint() {
+    var r = $("pad-readout");
+    r.textContent = pad || "Tap the keypad";
+    r.classList.toggle("empty", pad.length === 0);
+  }
+  paint();
+
+  $("pad-find").addEventListener("click", function () {
+    if (!members[pad]) {
+      $("pad-err").textContent = pad
+        ? "No member with that number."
+        : "Enter a phone number first.";
+      return;
+    }
+    target = pad;
+    renderFound();
+    show("s-found");
+  });
+
+  /* ---------- staff found ---------- */
+
+  function renderFound(animateFrom) {
+    var m = members[target];
+    $("found-name").textContent = m.name;
+    $("found-phone").textContent = target + " · member since " + m.joined;
+    slots($("found-slots"), m.stamps, animateFrom);
+    $("found-count").textContent = m.stamps + " of " + GOAL + " stamps";
+
+    var actions = $("found-actions");
+    actions.innerHTML = "";
+
+    if (m.stamps >= GOAL) {
+      var r = document.createElement("button");
+      r.className = "btn gold big";
+      r.textContent = "REDEEM FREE DRINK";
+      r.addEventListener("click", function () {
+        m.stamps = 0;
+        m.redeemed += 1;
+        m.visits = [];
+        confirmScreen("Free drink redeemed", m.name + " · card reset to 0", true);
+      });
+      actions.appendChild(r);
+    } else {
+      var a = document.createElement("button");
+      a.className = "btn go big";
+      a.textContent = "+1 STAMP";
+      a.addEventListener("click", function () {
+        m.stamps += 1;
+        m.visits.unshift("Today");
+        if (m.stamps >= GOAL) {
+          confirmScreen("Reward earned", m.name + " has a free drink", true);
+        } else {
+          confirmScreen("Stamp added", m.name + " · " + m.stamps + " of " + GOAL, false);
+        }
+      });
+      actions.appendChild(a);
+    }
+
+    var back = document.createElement("button");
+    back.className = "btn ghost";
+    back.textContent = "BACK TO LOOKUP";
+    back.addEventListener("click", function () { pad = ""; paint(); show("s-lookup"); });
+    actions.appendChild(back);
+  }
+
+  var confirmTimer = null;
+  function confirmScreen(msg, who, gold) {
+    $("confirm-msg").textContent = msg;
+    $("confirm-who").textContent = who;
+    $("s-confirm").classList.toggle("reward", !!gold);
+    show("s-confirm");
+    clearTimeout(confirmTimer);
+    confirmTimer = setTimeout(function () {
+      if (mode !== "staff") return;
+      pad = ""; paint();
+      show("s-lookup");
+    }, 1800);
+  }
+
+  /* ---------- clock ---------- */
+
+  function clock() {
+    var d = new Date();
+    var h = d.getHours(), m = d.getMinutes();
+    $("staff-clock").textContent = (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+  }
+  clock();
+  setInterval(clock, 20000);
+})();
+</script>
