@@ -114,10 +114,22 @@ CSV and insert into `members` (name, digits-only phone), then insert one `stamps
 row per stamp each member currently holds. Keep the old deployment live until the
 new domain is verified.
 
+## Verified
+
+Both flows have been walked against the live Supabase project: join → staff
+lookup → `+1 STAMP` → reward → `REDEEM FREE DRINK`, with the database checked
+after each step. Also confirmed directly against Postgres:
+
+- balance starts at 0 and increments
+- a second stamp within 5 seconds is rejected and the balance is unchanged
+- redeeming below a full card is refused
+- redeeming at 6 stamps consumes the 5 oldest and rolls 1 over
+- duplicate and non-numeric phone numbers are rejected
+- deleting a member cascades to their stamps and rewards
+
 ## Not built yet
 
-- Runtime verification against a real database. The code typechecks and builds,
-  but no flow has been exercised against live Postgres — do that first after
-  setup.
 - The 4-digit code step shown in the mockup's login flow. Deliberately dropped,
   since members are identified by phone number alone.
+- Staff attribution. Every stamp records *when*, not *who* — see the security
+  note above.
