@@ -10,17 +10,51 @@ export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Getta Staff — Customer" };
 
+type Done = "stamp" | "reward" | "redeemed";
+
+/**
+ * The confirmation lives on the card rather than on its own screen. Staff see
+ * what happened and the customer's new state in one place, and there is no
+ * timer to wait out before the next action.
+ */
+function confirmation(done: Done, name: string, stamps: number) {
+  if (done === "redeemed") {
+    return {
+      tone: "gold",
+      message: "Free drink redeemed",
+      detail: `${name} · card back to ${stamps}`,
+    };
+  }
+  if (done === "reward") {
+    return {
+      tone: "gold",
+      message: "Reward earned",
+      detail: `${name} has a free drink`,
+    };
+  }
+  return {
+    tone: "go",
+    message: "Stamp added",
+    detail: `${name} · ${stamps} of ${STAMPS_PER_REWARD}`,
+  };
+}
+
 export default async function StaffMemberPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ dup?: string; undone?: string; expired?: string }>;
+  searchParams: Promise<{
+    done?: string;
+    dup?: string;
+    undone?: string;
+    expired?: string;
+  }>;
 }) {
   if (!(await isStaff())) redirect("/staff");
 
   const { id } = await params;
-  const { dup, undone, expired } = await searchParams;
+  const { done, dup, undone, expired } = await searchParams;
 
   const member = await findById(id);
   if (!member) redirect("/staff/lookup");
@@ -31,6 +65,11 @@ export default async function StaffMemberPage({
     year: "numeric",
   });
   const undoable = canUndo(card);
+
+  const banner =
+    done === "stamp" || done === "reward" || done === "redeemed"
+      ? confirmation(done, member.name, card.stamps)
+      : null;
 
   return (
     <div className="shell dark">
@@ -43,6 +82,29 @@ export default async function StaffMemberPage({
             </button>
           </form>
         </div>
+
+        {banner ? (
+          <div className={`banner ${banner.tone}`} role="status">
+            <span className="banner-tick" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <span>
+              <span className="banner-msg">{banner.message}</span>
+              <span className="banner-sub">{banner.detail}</span>
+            </span>
+          </div>
+        ) : null}
 
         <div className="found">
           <p className="nm">{member.name}</p>
@@ -84,7 +146,7 @@ export default async function StaffMemberPage({
           )}
 
           <Link className="btn ghost" href="/staff/lookup">
-            BACK TO LOOKUP
+            NEXT CUSTOMER
           </Link>
         </div>
 
