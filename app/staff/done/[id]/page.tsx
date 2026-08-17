@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { findById, getCard, STAMPS_PER_REWARD } from "@/lib/members";
 import { isStaff } from "@/lib/session";
+import { undoStamp } from "../../actions";
 import { AutoReturn } from "./auto-return";
 
 export const dynamic = "force-dynamic";
@@ -26,8 +27,7 @@ export default async function StaffDonePage({
   if (!member) redirect("/staff/lookup");
 
   const card = await getCard(member);
-  const what: Kind =
-    kind === "reward" || kind === "redeemed" ? kind : "stamp";
+  const what: Kind = kind === "reward" || kind === "redeemed" ? kind : "stamp";
 
   const message =
     what === "redeemed"
@@ -44,10 +44,12 @@ export default async function StaffDonePage({
         : `${member.name} · ${card.stamps} of ${STAMPS_PER_REWARD}`;
 
   const celebratory = what !== "stamp";
+  // A stamp can be taken back, so hold the screen long enough to notice and act.
+  const undoable = what !== "redeemed";
 
   return (
     <div className={celebratory ? "shell confirm reward" : "shell confirm"}>
-      <AutoReturn />
+      <AutoReturn after={undoable ? 4000 : 1800} />
       <main className="screen">
         <div>
           <div className="tick">
@@ -67,19 +69,20 @@ export default async function StaffDonePage({
           </div>
           <p className="msg">{message}</p>
           <p className="who2">{detail}</p>
-          <p style={{ marginTop: 28, textAlign: "center" }}>
-            <Link
-              href="/staff/lookup"
-              style={{
-                color: "rgba(255,255,255,.9)",
-                fontSize: 13,
-                textDecoration: "underline",
-                textUnderlineOffset: 3,
-              }}
-            >
+
+          <div className="confirm-actions">
+            {undoable ? (
+              <form action={undoStamp}>
+                <input type="hidden" name="memberId" value={member.id} />
+                <button className="btn oncolor" type="submit">
+                  UNDO
+                </button>
+              </form>
+            ) : null}
+            <Link className="oncolor-link" href="/staff/lookup">
               Next customer
             </Link>
-          </p>
+          </div>
         </div>
       </main>
     </div>

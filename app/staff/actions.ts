@@ -8,6 +8,7 @@ import {
   normalisePhone,
   redeemReward,
   STAMPS_PER_REWARD,
+  undoLastStamp,
 } from "@/lib/members";
 import {
   endStaffSession,
@@ -73,6 +74,15 @@ export async function stamp(form: FormData): Promise<void> {
       open >= STAMPS_PER_REWARD ? "reward" : "stamp"
     }`,
   );
+}
+
+export async function undoStamp(form: FormData): Promise<void> {
+  await requireStaff();
+
+  const memberId = String(form.get("memberId") ?? "");
+  const removed = await undoLastStamp(memberId);
+
+  redirect(`/staff/member/${memberId}?${removed ? "undone=1" : "expired=1"}`);
 }
 
 export async function redeem(form: FormData): Promise<void> {

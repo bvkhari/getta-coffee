@@ -83,6 +83,10 @@ Two Postgres functions hold the rules, so they can't drift between callers:
   apart.
 - **`redeem_reward(member)`**: refuses unless the balance covers a full card,
   then records the redemption and consumes the stamps atomically.
+- **`undo_last_stamp(member)`**: removes the newest open stamp, but only within
+  10 minutes and never one already consumed by a redemption. Stamping the wrong
+  customer is the likeliest slip at a counter, so staff can take it back from
+  the confirmation screen or the customer's page.
 
 `stamps_per_reward()` returns 5. Change the program in that one function and
 `STAMPS_PER_REWARD` in [`lib/members.ts`](lib/members.ts).
@@ -135,6 +139,14 @@ each step. Also confirmed directly against Postgres:
 - redeeming at 6 stamps consumes the 5 oldest and rolls 1 over
 - duplicate and non-numeric phone numbers are rejected
 - deleting a member cascades to their stamps and rewards
+- undo removes a fresh stamp, refuses one older than 10 minutes, and cannot
+  revive a stamp already consumed by a redemption
+- a signed cookie naming a member who no longer exists lands on the join screen
+  instead of looping between `/` and `/card`
+
+Every text colour meets WCAG AA for its size, checked by calculation rather than
+by eye. Redeeming needs two taps, because it sits where `+1 STAMP` normally does
+and cannot be undone.
 
 ## Not built yet
 

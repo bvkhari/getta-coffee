@@ -1,21 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  findById,
+  currentMember,
   getCard,
   STAMPS_PER_REWARD,
   voucherCode,
 } from "@/lib/members";
-import { currentMemberId } from "@/lib/session";
 import { Eyebrow, Footer } from "../../components";
 
 export const dynamic = "force-dynamic";
 
 export default async function RewardPage() {
-  const memberId = await currentMemberId();
-  if (!memberId) redirect("/");
-
-  const member = await findById(memberId);
+  const member = await currentMember();
   if (!member) redirect("/");
 
   const card = await getCard(member);
