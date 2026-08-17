@@ -104,6 +104,12 @@ means anyone who knows a member's phone number can see that member's name and
 stamp count, which was an accepted tradeoff for a 5-stamp coffee card. Add SMS
 OTP via Supabase Auth if real value is ever attached to an account.
 
+Joining never signs anyone into an existing account. If the number is taken,
+the form says so and offers to open that card as a separate, deliberate step.
+An earlier version signed the visitor straight in, which threw away the name
+they typed and — on a single mistyped digit — put them inside a stranger's card
+with nothing to indicate it.
+
 Staff share one passcode, compared in constant time and held in an HMAC-signed
 httpOnly cookie scoped to `/staff` for 12 hours. No stamp is attributable to an
 individual barista. If you need that, add staff accounts and a `staff_id` column

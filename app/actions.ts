@@ -9,7 +9,13 @@ import {
 } from "@/lib/members";
 import { endMemberSession, startMemberSession } from "@/lib/session";
 
-export type FormState = { error?: string };
+export type FormState = {
+  error?: string;
+  /** Set when the number is taken, so the form can offer to log in instead. */
+  takenPhone?: string;
+};
+
+const TAKEN = "That number is already a member.";
 
 export async function join(
   _prev: FormState,
@@ -23,16 +29,35 @@ export async function join(
     return { error: "Enter a phone number, digits only, 7 to 15 of them." };
   }
 
-  const existing = await findByPhone(phone);
-  if (existing) {
-    // Already a member — sign them in rather than dead-ending on an error.
-    await startMemberSession(existing.id);
-    redirect("/card");
+  // Never sign someone in off the join form. This used to log the visitor into
+  // whichever account already held the number, which silently ignored the name
+  // they typed and — for a single mistyped digit — dropped them inside a
+  // stranger's card. Say the number is taken and let them choose.
+  if (await findByPhone(phone)) {
+    return { error: TAKEN, takenPhone: phone };
   }
 
-  const member = await createMember(name, phone);
+  let member;
+  try {
+    member = await createMember(name, phone);
+  } catch (error) {
+    // Two joins racing for the same number: the unique index wins, and the
+    // loser gets the same answer as if we had seen it on the read above.
+    if (isDuplicatePhone(error)) return { error: TAKEN, takenPhone: phone };
+    throw error;
+  }
+
   await startMemberSession(member.id);
   redirect("/card?welcome=1");
+}
+
+function isDuplicatePhone(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: unknown }).code === "23505"
+  );
 }
 
 export async function logIn(
