@@ -43,15 +43,43 @@ html, body {
   -webkit-text-size-adjust: 100%;
 }
 
+/* One definition each, shared with the loading screen — if these drift, the
+   handoff from loading to content flashes a different colour. */
+.shell, .loading {
+  background: radial-gradient(120% 46% at 50% 0%, #FEFAF3 0%, var(--ivory) 45%, var(--ivory-deep) 100%);
+}
+.shell.dark, .loading.dark {
+  background: radial-gradient(120% 46% at 50% 0%, #38190E 0%, var(--dark) 60%);
+  color: var(--dark-text);
+}
+
 .shell {
   min-height: 100dvh;
   display: flex;
   justify-content: center;
-  background: radial-gradient(120% 46% at 50% 0%, #FEFAF3 0%, var(--ivory) 45%, var(--ivory-deep) 100%);
 }
-.shell.dark {
-  background: radial-gradient(120% 46% at 50% 0%, #38190E 0%, var(--dark) 60%);
-  color: var(--dark-text);
+
+/* ---------- loading ---------- */
+
+.loading {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+.loading-mark {
+  width: min(88px, 24%);
+  height: auto;
+  will-change: transform, opacity;
+  /* Arrives without overshoot, then breathes. No bounce: nothing the user did
+     carried momentum into this. */
+  animation:
+    mark-in .42s var(--ease) both,
+    mark-breathe 1.4s var(--ease) .42s infinite;
+}
+@keyframes mark-in { from { opacity: 0; transform: scale(.86); } }
+@keyframes mark-breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .55; transform: scale(.94); }
 }
 
 .screen {
@@ -546,5 +574,12 @@ input.t:focus {
   *, *::before, *::after {
     animation-duration: .001ms !important;
     transition-duration: .001ms !important;
+  }
+  /* A looping animation crushed to .001ms would strobe rather than stop, so the
+     breathing mark is switched off outright and just sits there. */
+  .loading-mark {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
   }
 }
