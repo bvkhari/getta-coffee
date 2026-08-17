@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 /**
- * The confirmation is a glance, not a screen to dismiss — staff have a cup in
- * one hand. It returns to the keypad on its own, and a tap gets there sooner.
+ * Staff are holding a cup in one hand, so the confirmation returns to the
+ * keypad on its own. Tapping through gets there sooner.
  */
 export function AutoReturn({ after = 1800 }: { after?: number }) {
   const router = useRouter();

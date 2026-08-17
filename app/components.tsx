@@ -40,7 +40,8 @@ function Bean() {
 
 /**
  * Five slots showing progress toward the next free drink. Stamps past the
- * threshold roll over, so a member on 6 sees a full gold card, not a lost one.
+ * threshold roll over, so a member on 6 sees a full gold card and keeps the
+ * spare.
  */
 export function Slots({ stamps }: { stamps: number }) {
   const complete = stamps >= STAMPS_PER_REWARD;
