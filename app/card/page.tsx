@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentMember, getCard } from "@/lib/members";
 import { logOut } from "../actions";
-import { Eyebrow, Footer, Progress, Slots, formatVisit } from "../components";
+import { Footer, Progress, Slots, formatVisit } from "../components";
 import { RefreshButton } from "./refresh-button";
 
 export const dynamic = "force-dynamic";
@@ -22,9 +22,9 @@ export default async function CardPage({
   return (
     <div className="shell">
       <main className="screen">
-        <Eyebrow>
+        <p className="eyebrow">
           {welcome ? `Welcome, ${firstName}` : "Getta Rewards"}
-        </Eyebrow>
+        </p>
 
         {welcome ? (
           <p className="sub">

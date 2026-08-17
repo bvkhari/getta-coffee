@@ -18,10 +18,6 @@ export function Wordmark() {
   );
 }
 
-export function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="eyebrow">{children}</p>;
-}
-
 export function Footer() {
   return <p className="foot">Crafted with Care, Served with Quality</p>;
 }

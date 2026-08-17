@@ -42,17 +42,16 @@ export type Database = {
         Relationships: [];
       };
     };
+    /* Required by supabase-js's GenericSchema constraint, even though this
+       schema has no views. */
     Views: Record<never, never>;
     Functions: {
       add_stamp: { Args: { p_member: string }; Returns: number };
       redeem_reward: { Args: { p_member: string }; Returns: string };
-      stamps_per_reward: { Args: Record<never, never>; Returns: number };
       undo_last_stamp: {
         Args: { p_member: string; p_within?: string };
         Returns: boolean;
       };
     };
-    Enums: Record<never, never>;
-    CompositeTypes: Record<never, never>;
   };
 };

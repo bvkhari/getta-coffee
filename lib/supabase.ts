@@ -9,25 +9,20 @@ import type { Database } from "@/lib/database.types";
  * with no policies, which means the anon key would read nothing even if it did
  * leak.
  */
-function required(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(
-      `Missing ${name}. Copy .env.example to .env.local and fill it in — see README.`,
-    );
-  }
-  return value;
-}
-
 let client: ReturnType<typeof createClient<Database>> | null = null;
 
 export function db() {
   if (!client) {
-    client = createClient<Database>(
-      required("SUPABASE_URL"),
-      required("SUPABASE_SERVICE_ROLE_KEY"),
-      { auth: { persistSession: false, autoRefreshToken: false } },
-    );
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+      throw new Error(
+        "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY. Copy .env.example to .env.local and fill it in — see README.",
+      );
+    }
+    client = createClient<Database>(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
   }
   return client;
 }

@@ -6,7 +6,7 @@ import {
   STAMPS_PER_REWARD,
   voucherCode,
 } from "@/lib/members";
-import { Eyebrow, Footer } from "../../components";
+import { Footer } from "../../components";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,7 @@ export default async function RewardPage() {
   return (
     <div className="shell">
       <main className="screen">
-        <Eyebrow>Reward earned</Eyebrow>
+        <p className="eyebrow">Reward earned</p>
 
         <div className="voucher">
           <p className="kicker">Getta Rewards</p>
