@@ -77,17 +77,15 @@ export default async function CardPage({
           )}
         </div>
 
-        <div className="card-actions">
+        <div className="stack">
           <RefreshButton />
-          <span className="card-actions-sep" aria-hidden="true">
-            ·
-          </span>
-          <form action={logOut}>
-            <button className="link" type="submit">
-              Sign out
-            </button>
-          </form>
         </div>
+
+        <form action={logOut} className="signout">
+          <button className="link" type="submit">
+            Sign out
+          </button>
+        </form>
 
         <Footer />
       </main>

@@ -254,17 +254,14 @@ input.t:focus {
 }
 .link[disabled] { cursor: default; opacity: .6; text-decoration: none; }
 
-/* Refresh sits beside Sign out. Padding is generous for the thumb, since the
-   two sit close enough that a sloppy tap could hit the wrong one. */
-.card-actions {
-  margin: 22px auto 0;
+/* Refresh is the boxed action; signing out sits quietly beneath it, far enough
+   down that a thumb reaching for Refresh can't catch it. */
+.signout {
+  margin: 14px auto 0;
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 4px;
 }
-.card-actions .link { padding: 10px 12px; }
-.card-actions-sep { color: var(--line); font-size: 13px; }
+.signout .link { padding: 10px 16px; }
 .dark .link { color: var(--dark-muted); }
 
 .foot {
