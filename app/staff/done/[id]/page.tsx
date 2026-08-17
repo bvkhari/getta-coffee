@@ -44,12 +44,17 @@ export default async function StaffDonePage({
         : `${member.name} · ${card.stamps} of ${STAMPS_PER_REWARD}`;
 
   const celebratory = what !== "stamp";
-  // A stamp can be taken back, so hold the screen long enough to notice and act.
   const undoable = what !== "redeemed";
+
+  // After a stamp, go back to this customer's card: if that stamp completed the
+  // card, staff can redeem straight away instead of typing the number again.
+  // A redemption is the end of the transaction, so that one returns to lookup.
+  const destination =
+    what === "redeemed" ? "/staff/lookup" : `/staff/member/${member.id}`;
 
   return (
     <div className={celebratory ? "shell confirm reward" : "shell confirm"}>
-      <AutoReturn after={undoable ? 4000 : 1800} />
+      <AutoReturn to={destination} />
       <main className="screen">
         <div>
           <div className="tick">
