@@ -116,7 +116,11 @@ export default async function LocationsPage({
           ) : null}
         </div>
 
-        <form action={addLocation} className="fields" style={{ padding: 0 }}>
+        <form
+          action={addLocation}
+          className="fields"
+          style={{ padding: "30px 0 0" }}
+        >
           <label className="f">
             New location
             <input
