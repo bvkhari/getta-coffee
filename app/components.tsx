@@ -2,20 +2,19 @@ import Image from "next/image";
 import { STAMPS_PER_REWARD } from "@/lib/members";
 import wordmark from "@/public/getta-wordmark.png";
 
+/**
+ * The real stencil wordmark. Eager, because it is the first thing a customer
+ * sees and lazy-loading the brand reads as a broken page.
+ */
 export function Wordmark() {
   return (
-    <div className="mark">
-      {/* The real stencil wordmark. Eager, because it is the first thing a
-          customer should see and lazy-loading the brand reads as a broken page. */}
-      <Image
-        className="wordmark"
-        src={wordmark}
-        alt="Getta Coffee"
-        sizes="176px"
-        priority
-      />
-      <p className="eyebrow">Getta Rewards</p>
-    </div>
+    <Image
+      className="wordmark"
+      src={wordmark}
+      alt="Getta Coffee"
+      sizes="176px"
+      priority
+    />
   );
 }
 
