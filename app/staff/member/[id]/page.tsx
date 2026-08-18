@@ -64,6 +64,7 @@ export default async function StaffMemberPage({
   const joined = new Date(member.created_at).toLocaleDateString("en-GB", {
     month: "short",
     year: "numeric",
+    timeZone: "Asia/Kuala_Lumpur",
   });
   const undoable = canUndo(card);
 
