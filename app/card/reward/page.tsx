@@ -14,7 +14,7 @@ export default async function RewardPage() {
   const member = await currentMember();
   if (!member) redirect("/");
 
-  const card = await getCard(member);
+  const card = await getCard(member.id);
   if (card.rewardsReady < 1) redirect("/card");
 
   return (

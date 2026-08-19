@@ -1,3 +1,4 @@
+import { unstable_cache, updateTag } from "next/cache";
 import { db } from "@/lib/supabase";
 import { currentMemberId } from "@/lib/session";
 
@@ -76,34 +77,50 @@ export async function createMember(
   return data as unknown as Member;
 }
 
-export async function getCard(member: Member): Promise<Card> {
-  const [open, past] = await Promise.all([
-    db()
-      .from("stamps")
-      .select("created_at, location")
-      .eq("member_id", member.id)
-      .is("reward_id", null)
-      .order("created_at", { ascending: false }),
-    db()
-      .from("rewards")
-      .select("id")
-      .eq("member_id", member.id),
-  ]);
+/**
+ * Tag for one member's card. Cached reads are cleared by the three writes that
+ * can change a balance, so a stamp shows up on the customer's phone straight
+ * away and the minute below is only a backstop.
+ */
+const cardTag = (memberId: string) => `card:${memberId}`;
+const A_MINUTE = 60;
 
-  if (open.error) throw open.error;
-  if (past.error) throw past.error;
+export function getCard(memberId: string): Promise<Card> {
+  // Built per call rather than once at module scope: the tag has to close over
+  // the member id, and unstable_cache's options are fixed when it is created.
+  return unstable_cache(
+    async (): Promise<Card> => {
+      const [open, past] = await Promise.all([
+        db()
+          .from("stamps")
+          .select("created_at, location")
+          .eq("member_id", memberId)
+          .is("reward_id", null)
+          .order("created_at", { ascending: false }),
+        db()
+          .from("rewards")
+          .select("id")
+          .eq("member_id", memberId),
+      ]);
 
-  const stamps = open.data.length;
+      if (open.error) throw open.error;
+      if (past.error) throw past.error;
 
-  return {
-    stamps,
-    rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
-    redeemed: past.data.length,
-    visits: open.data.map((row) => ({
-      at: row.created_at as string,
-      location: row.location as string | null,
-    })),
-  };
+      const stamps = open.data.length;
+
+      return {
+        stamps,
+        rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
+        redeemed: past.data.length,
+        visits: open.data.map((row) => ({
+          at: row.created_at as string,
+          location: row.location as string | null,
+        })),
+      };
+    },
+    ["member-card", memberId],
+    { tags: [cardTag(memberId)], revalidate: A_MINUTE },
+  )();
 }
 
 export async function addStamp(
@@ -115,6 +132,7 @@ export async function addStamp(
     p_location: location,
   });
   if (error) throw error;
+  updateTag(cardTag(memberId));
   return data as unknown as number;
 }
 
@@ -139,6 +157,7 @@ export async function undoLastStamp(memberId: string): Promise<boolean> {
     p_member: memberId,
   });
   if (error) throw error;
+  updateTag(cardTag(memberId));
   return data as unknown as boolean;
 }
 
@@ -147,6 +166,7 @@ export async function redeemReward(memberId: string): Promise<string> {
     p_member: memberId,
   });
   if (error) throw error;
+  updateTag(cardTag(memberId));
   return data as unknown as string;
 }
 
