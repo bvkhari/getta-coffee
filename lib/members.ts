@@ -33,10 +33,18 @@ export function isValidPhone(phone: string): boolean {
 
 const MEMBER_COLS = "id, name, phone, created_at";
 
+const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 async function findMember(
   column: "id" | "phone",
   value: string,
 ): Promise<Member | null> {
+  // A non-UUID id is nobody, not a database error. Postgres answers a malformed
+  // uuid with 22P02, and the throw below used to land as a 500 one line before
+  // the caller's redirect could handle the miss.
+  if (column === "id" && !UUID.test(value)) return null;
+
   const { data, error } = await db()
     .from("members")
     .select(MEMBER_COLS)
