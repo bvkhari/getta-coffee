@@ -1,5 +1,5 @@
 import { unstable_cache, updateTag } from "next/cache";
-import { db } from "@/lib/supabase";
+import { db } from "@/shared/supabase";
 
 /**
  * Where stamps get earned. The café owns this list, so opening a branch or

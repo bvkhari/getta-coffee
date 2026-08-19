@@ -6,11 +6,12 @@ import {
   getCard,
   STAMPS_PER_REWARD,
   voucherCode,
-} from "@/lib/members";
-import { staffPlace } from "@/lib/session";
-import { Slots, formatVisit } from "../../../components";
-import { lockUp, stamp, undoStamp } from "../../actions";
-import { RedeemButton } from "./redeem-button";
+} from "@/shared/members";
+import { staffPlace } from "@/shared/session";
+import { formatVisit } from "@/shared/format";
+import { Slots } from "@/shared/ui/slots";
+import { lockUp, stamp, undoStamp } from "@/features/staff/actions";
+import { RedeemButton } from "@/features/staff/redeem-button";
 
 export const dynamic = "force-dynamic";
 

@@ -5,8 +5,8 @@ import {
   getCard,
   STAMPS_PER_REWARD,
   voucherCode,
-} from "@/lib/members";
-import { Footer } from "../../components";
+} from "@/shared/members";
+import { Footer } from "@/shared/ui/footer";
 
 export const dynamic = "force-dynamic";
 

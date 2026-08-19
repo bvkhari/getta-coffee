@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { redeem } from "../../actions";
+import { redeem } from "@/features/staff/actions";
 
 /**
  * Redeeming consumes five stamps and cannot be undone, and this button lands in

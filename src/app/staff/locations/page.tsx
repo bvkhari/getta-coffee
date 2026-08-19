@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { listLocations } from "@/lib/locations";
-import { isStaff } from "@/lib/session";
-import { addLocation, lockUp, toggleLocation } from "../actions";
+import { listLocations } from "@/features/staff/locations";
+import { isStaff } from "@/shared/session";
+import { addLocation, lockUp, toggleLocation } from "@/features/staff/actions";
 
 export const dynamic = "force-dynamic";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { join, logIn, type FormState } from "./actions";
+import { join, logIn, type FormState } from "@/features/membership/actions";
 
 const empty: FormState = {};
 
