@@ -535,7 +535,6 @@ input.t:focus {
 }
 .claim .code {
   display: block;
-  margin-top: 8px;
   color: var(--gold-lift);
 }
 
