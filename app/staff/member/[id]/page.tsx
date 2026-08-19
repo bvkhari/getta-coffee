@@ -149,7 +149,6 @@ export default async function StaffMemberPage({
                   Derive from the reward's own uuid if this ever needs to
                   identify a specific drink. */}
               <p className="claim">
-                Their screen shows
                 <span className="code">{voucherCode(member.id)}</span>
               </p>
               <RedeemButton memberId={member.id} />
