@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { canUndo, findById, getCard, STAMPS_PER_REWARD } from "@/lib/members";
+import {
+  canUndo,
+  findById,
+  getCard,
+  STAMPS_PER_REWARD,
+  voucherCode,
+} from "@/lib/members";
 import { staffPlace } from "@/lib/session";
 import { Slots, formatVisit } from "../../../components";
 import { lockUp, stamp, undoStamp } from "../../actions";
@@ -137,7 +143,17 @@ export default async function StaffMemberPage({
 
         <div className="stack">
           {card.rewardsReady > 0 ? (
-            <RedeemButton memberId={member.id} />
+            <>
+              {/* ponytail: confirms a card is in the reward state, not which
+                  card — voucherCode hashes the member id into 10k values.
+                  Derive from the reward's own uuid if this ever needs to
+                  identify a specific drink. */}
+              <p className="claim">
+                Their screen shows
+                <span className="code">{voucherCode(member.id)}</span>
+              </p>
+              <RedeemButton memberId={member.id} />
+            </>
           ) : (
             <form action={stamp}>
               <input type="hidden" name="memberId" value={member.id} />
