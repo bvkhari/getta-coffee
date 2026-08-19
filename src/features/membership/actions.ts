@@ -6,8 +6,8 @@ import {
   findByPhone,
   isValidPhone,
   normalisePhone,
-} from "@/lib/members";
-import { endMemberSession, startMemberSession } from "@/lib/session";
+} from "@/shared/members";
+import { endMemberSession, startMemberSession } from "@/shared/session";
 
 export type FormState = {
   error?: string;

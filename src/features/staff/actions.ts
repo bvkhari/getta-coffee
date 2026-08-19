@@ -9,20 +9,20 @@ import {
   redeemReward,
   STAMPS_PER_REWARD,
   undoLastStamp,
-} from "@/lib/members";
+} from "@/shared/members";
 import {
   createLocation,
   findActiveLocation,
   listLocations,
   setLocationActive,
-} from "@/lib/locations";
+} from "@/features/staff/locations";
 import {
   endStaffSession,
   isStaff,
   passcodeMatches,
   staffPlace,
   startStaffSession,
-} from "@/lib/session";
+} from "@/shared/session";
 
 export type StaffState = { error?: string };
 

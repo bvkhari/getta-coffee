@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { staffPlace } from "@/lib/session";
-import { lockUp } from "../actions";
-import { Keypad } from "./keypad";
+import { staffPlace } from "@/shared/session";
+import { lockUp } from "@/features/staff/actions";
+import { Keypad } from "@/features/staff/keypad";
 
 export const dynamic = "force-dynamic";
 

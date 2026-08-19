@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { Location } from "@/lib/locations";
-import { unlock, type StaffState } from "./actions";
+import type { Location } from "@/features/staff/locations";
+import { unlock, type StaffState } from "@/features/staff/actions";
 
 /**
  * Where this shift is stamping from, picked once at unlock. Every stamp taken

@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { currentMember, STAMPS_PER_REWARD } from "@/lib/members";
-import { Footer, Wordmark } from "./components";
-import { EntryForm } from "./entry-form";
+import { currentMember, STAMPS_PER_REWARD } from "@/shared/members";
+import { Footer } from "@/shared/ui/footer";
+import { Wordmark } from "@/shared/ui/wordmark";
+import { EntryForm } from "@/features/membership/entry-form";
 
 export default async function EntryPage() {
   // A returning member on the same device goes straight to their card. Checked

@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { currentMember, getCard } from "@/lib/members";
-import { logOut } from "../actions";
-import { Footer, Progress, Slots, formatVisit } from "../components";
-import { RefreshButton } from "./refresh-button";
+import { currentMember, getCard } from "@/shared/members";
+import { logOut } from "@/features/membership/actions";
+import { formatVisit } from "@/shared/format";
+import { Footer } from "@/shared/ui/footer";
+import { Progress } from "@/shared/ui/progress";
+import { Slots } from "@/shared/ui/slots";
+import { RefreshButton } from "@/features/membership/refresh-button";
 
 export const dynamic = "force-dynamic";
 

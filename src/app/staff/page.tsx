@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { listLocations } from "@/lib/locations";
-import { isStaff } from "@/lib/session";
-import { PasscodeForm } from "./passcode-form";
+import { listLocations } from "@/features/staff/locations";
+import { isStaff } from "@/shared/session";
+import { PasscodeForm } from "@/features/staff/passcode-form";
 
 export const dynamic = "force-dynamic";
 

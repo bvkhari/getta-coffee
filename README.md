@@ -89,7 +89,7 @@ Two Postgres functions hold the rules, so they can't drift between callers:
   the confirmation screen or the customer's page.
 
 `stamps_per_reward()` returns 5. Change the program in that one function and
-`STAMPS_PER_REWARD` in [`lib/members.ts`](lib/members.ts).
+`STAMPS_PER_REWARD` in [`src/shared/members.ts`](src/shared/members.ts).
 
 ## Security model
 

@@ -1,6 +1,6 @@
 import { unstable_cache, updateTag } from "next/cache";
-import { db } from "@/lib/supabase";
-import { currentMemberId } from "@/lib/session";
+import { db } from "@/shared/supabase";
+import { currentMemberId } from "@/shared/session";
 
 export const STAMPS_PER_REWARD = 5;
 
