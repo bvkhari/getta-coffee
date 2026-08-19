@@ -1,3 +1,4 @@
+import { unstable_cache, updateTag } from "next/cache";
 import { db } from "@/lib/supabase";
 
 /**
@@ -13,29 +14,43 @@ export type Location = {
 
 const COLS = "id, name, active, asks_event";
 
-export async function listLocations(activeOnly = false): Promise<Location[]> {
-  let query = db().from("locations").select(COLS).order("name");
-  if (activeOnly) query = query.eq("active", true);
+/**
+ * Every staff screen reads this list on every load, on a device that stays open
+ * all shift, and the list changes about twice a year. So it is cached until a
+ * write says otherwise; the hour is only a backstop.
+ */
+const TAG = "locations";
+const AN_HOUR = 3600;
 
-  const { data, error } = await query;
-  if (error) throw error;
-  return data as Location[];
-}
+export const listLocations = unstable_cache(
+  async (activeOnly = false): Promise<Location[]> => {
+    let query = db().from("locations").select(COLS).order("name");
+    if (activeOnly) query = query.eq("active", true);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data as Location[];
+  },
+  ["locations-list"],
+  { tags: [TAG], revalidate: AN_HOUR },
+);
 
 /** The row a staff member may unlock as, or null. Closed branches don't count. */
-export async function findActiveLocation(
-  name: string,
-): Promise<Location | null> {
-  const { data, error } = await db()
-    .from("locations")
-    .select(COLS)
-    .eq("name", name)
-    .eq("active", true)
-    .maybeSingle();
+export const findActiveLocation = unstable_cache(
+  async (name: string): Promise<Location | null> => {
+    const { data, error } = await db()
+      .from("locations")
+      .select(COLS)
+      .eq("name", name)
+      .eq("active", true)
+      .maybeSingle();
 
-  if (error) throw error;
-  return (data as Location | null) ?? null;
-}
+    if (error) throw error;
+    return (data as Location | null) ?? null;
+  },
+  ["location-active"],
+  { tags: [TAG], revalidate: AN_HOUR },
+);
 
 export async function createLocation(
   name: string,
@@ -45,6 +60,7 @@ export async function createLocation(
     .from("locations")
     .insert({ name, asks_event: asksEvent });
   if (error) throw error;
+  updateTag(TAG);
 }
 
 /**
@@ -57,4 +73,5 @@ export async function setLocationActive(
 ): Promise<void> {
   const { error } = await db().from("locations").update({ active }).eq("id", id);
   if (error) throw error;
+  updateTag(TAG);
 }

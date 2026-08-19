@@ -15,7 +15,7 @@ export default async function CardPage({
   const member = await currentMember();
   if (!member) redirect("/");
 
-  const card = await getCard(member);
+  const card = await getCard(member.id);
   const { welcome } = await searchParams;
   const firstName = member.name.split(" ")[0];
 

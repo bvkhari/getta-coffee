@@ -60,7 +60,7 @@ export default async function StaffMemberPage({
   const member = await findById(id);
   if (!member) redirect("/staff/lookup");
 
-  const card = await getCard(member);
+  const card = await getCard(member.id);
   const joined = new Date(member.created_at).toLocaleDateString("en-GB", {
     month: "short",
     year: "numeric",
