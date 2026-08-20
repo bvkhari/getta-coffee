@@ -115,16 +115,52 @@ httpOnly cookie scoped to `/staff` for 12 hours. No stamp is attributable to an
 individual barista. If you need that, add staff accounts and a `staff_id` column
 on `stamps`.
 
-`/staff` and `/card` are excluded from robots.
+`/staff` and `/card` carry `noindex` page metadata, set on a layout in each
+directory so nested routes inherit it. This replaced a `robots.ts` disallow:
+a disallow stops a crawler fetching the page, which also stops it ever seeing a
+`noindex`, so a linked URL can still surface in results with no content. The
+page-level rule is the one that actually keeps them out.
 
 ## Deploying
 
-Vercel: import the repo, add the four environment variables, add the domain.
-Keep `SUPABASE_SERVICE_ROLE_KEY` server-side; prefixing it `NEXT_PUBLIC_` would
+Vercel: import the repo and add the four environment variables. Keep
+`SUPABASE_SERVICE_ROLE_KEY` server-side; prefixing it `NEXT_PUBLIC_` would
 publish it to every visitor.
 
 Vercel's Hobby plan is licensed for non-commercial use, so a paying shop's live
-app belongs on Pro.
+app belongs on Pro. This deployment stays on Hobby as a deliberate, accepted
+call, not an oversight.
+
+### The `rewards.gettacoffee.com` subdomain
+
+The cafe owns `gettacoffee.com`, whose apex serves their customer feedback
+survey. The reward app takes the `rewards.` subdomain, so the two never share a
+hostname: separate origin, separate cookies, and no rule sitting in front of the
+survey that could take it down.
+
+DNS for the domain is delegated to **Cloudflare** (the registrar is Squarespace,
+which holds registration only — its nameservers point at Cloudflare). The whole
+setup is one record there:
+
+```
+rewards   CNAME   cname.vercel-dns.com      DNS only (grey cloud)
+```
+
+Leave it **DNS-only**. Proxying Cloudflare in front of Vercel stacks two CDNs for
+no benefit, and with Cloudflare's SSL mode set to Flexible it produces a redirect
+loop. Add `rewards.gettacoffee.com` as a domain on the Vercel project and let
+Vercel issue the certificate.
+
+Nothing in the application code is domain-aware: no `basePath`, no
+`metadataBase`, no absolute URLs. Moving the app to a different hostname needs no
+code change at all.
+
+A path on the apex (`gettacoffee.com/rewards`) was built and then abandoned. It
+worked, but it required a `basePath`, a `serverActions.allowedOrigins` CSRF
+exemption, cookie paths pinned to the prefix, and a permanent Cloudflare Worker
+or Origin Rule proxying two apps under one hostname. It also put the reward app
+and the survey on the same origin, and tripped a Next bug where a form submitted
+before hydration redirects without the prefix. The subdomain removes all of it.
 
 ## Migrating from the Apps Script version
 
