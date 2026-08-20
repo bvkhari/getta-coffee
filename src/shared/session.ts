@@ -3,6 +3,11 @@ import { cookies } from "next/headers";
 
 const MEMBER_COOKIE = "getta_member";
 const STAFF_COOKIE = "getta_staff";
+
+// Deleting a cookie only works when the path matches the one it was set with,
+// so both sides read these rather than repeating the literal.
+const MEMBER_COOKIE_PATH = "/";
+const STAFF_COOKIE_PATH = "/staff";
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 const TWELVE_HOURS = 60 * 60 * 12;
 
@@ -43,7 +48,7 @@ export async function startMemberSession(memberId: string): Promise<void> {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
-    path: "/",
+    path: MEMBER_COOKIE_PATH,
     maxAge: THIRTY_DAYS,
   });
 }
@@ -53,7 +58,7 @@ export async function currentMemberId(): Promise<string | null> {
 }
 
 export async function endMemberSession(): Promise<void> {
-  (await cookies()).delete(MEMBER_COOKIE);
+  (await cookies()).delete({ name: MEMBER_COOKIE, path: MEMBER_COOKIE_PATH });
 }
 
 /* ---------- staff session ---------- */
@@ -84,7 +89,7 @@ export async function startStaffSession(place: string): Promise<void> {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
-    path: "/staff",
+    path: STAFF_COOKIE_PATH,
     maxAge: TWELVE_HOURS,
   });
 }
@@ -102,5 +107,5 @@ export async function isStaff(): Promise<boolean> {
 }
 
 export async function endStaffSession(): Promise<void> {
-  (await cookies()).delete(STAFF_COOKIE);
+  (await cookies()).delete({ name: STAFF_COOKIE, path: STAFF_COOKIE_PATH });
 }
