@@ -184,13 +184,27 @@ each step. Also confirmed directly against Postgres:
 - balance starts at 0 and increments
 - a second stamp within 5 seconds is rejected and the balance is unchanged
 - redeeming below a full card is refused
-- redeeming at 6 stamps deletes the 5 oldest and rolls 1 over
+- redeeming at 6 stamps consumes the 5 oldest and rolls 1 over
 - duplicate and non-numeric phone numbers are rejected
 - deleting a member cascades to their stamps and rewards
-- undo removes a fresh stamp and refuses one older than 10 minutes; the stamps a
-  redemption took are gone, so there is nothing there for it to revive
+- undo removes a fresh stamp, refuses one older than 10 minutes, and cannot
+  reach one a redemption already took
 - a signed cookie naming a member who no longer exists lands on the join screen
   instead of looping between `/` and `/card`
+
+Those runs predate migration `0004`, which changed how a redemption consumes
+stamps. After applying it to the live project, re-checked read-only:
+
+- the backfill deleted exactly the 5 stamps belonging to the one past
+  redemption, leaving 4; the `rewards` row was untouched
+- no member's balance moved — the deleted rows had all been consumed already
+- `reward_id` is gone from `stamps`
+- `redeem_reward` still refuses a member below a full card, and
+  `undo_last_stamp` still returns false when nothing is in range, both now
+  running against the new schema
+
+The write paths under the new schema — stamping, and a redemption that actually
+deletes — have not been re-exercised end to end since the migration.
 
 Every text colour meets WCAG AA for its size, checked by calculation rather than
 by eye. Redeeming needs two taps, because it sits where `+1 STAMP` normally does
