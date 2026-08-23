@@ -103,7 +103,6 @@ export function getCard(memberId: string): Promise<Card> {
           .from("stamps")
           .select("created_at, location")
           .eq("member_id", memberId)
-          .is("reward_id", null)
           .order("created_at", { ascending: false }),
         db()
           .from("rewards")

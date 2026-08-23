@@ -1,5 +1,5 @@
 /**
- * Schema types for the Supabase client, matching supabase/migrations/0001_init.sql.
+ * Schema types for the Supabase client, matching the migrations in supabase/.
  *
  * Hand-written so the project typechecks before it is linked to a Supabase
  * project. Once you have linked one you can regenerate this instead:
@@ -24,17 +24,15 @@ export type Database = {
           id: string;
           member_id: string;
           created_at: string;
-          reward_id: string | null;
           location: string | null;
         };
         Insert: {
           id?: string;
           member_id: string;
           created_at?: string;
-          reward_id?: string | null;
           location?: string | null;
         };
-        Update: { reward_id?: string | null };
+        Update: { location?: string | null };
         Relationships: [];
       };
       locations: {

@@ -61,19 +61,25 @@ Customer at `/`, staff at `/staff`.
 
 ## How the data works
 
-Three tables. Nothing stores a member's stamp balance. It is derived as the
-number of stamps not yet consumed by a redemption:
+Three tables. Nothing stores a member's stamp balance. It is derived by counting
+the stamps they are holding:
 
 ```
 members   id, name, phone (unique), created_at
-stamps    id, member_id, created_at, reward_id  -- reward_id null = still counting
+stamps    id, member_id, created_at, location   -- one row per unclaimed stamp
 rewards   id, member_id, redeemed_at
 ```
 
-Balance is `count(stamps where reward_id is null)`. Redeeming inserts a `rewards`
-row and stamps the 5 oldest open rows with its id. Extra stamps therefore roll
-over instead of vanishing, and a mis-stamp is undone by deleting one row rather
-than reconciling a number.
+Balance is `count(stamps)` for that member. Redeeming inserts a `rewards` row and
+**deletes** the 5 oldest stamps that paid for it, so `stamps` only ever holds what
+a member has not claimed yet. That keeps the one table that would otherwise grow
+forever small enough for Supabase's free plan, and `rewards` — one short row per
+free drink — is the lasting record. Extra stamps still roll over instead of
+vanishing, and a mis-stamp is undone by deleting one row rather than reconciling
+a number.
+
+The trade is provenance: once a drink is claimed, nothing remembers which branch
+earned it.
 
 Two Postgres functions hold the rules, so they can't drift between callers:
 
@@ -82,11 +88,11 @@ Two Postgres functions hold the rules, so they can't drift between callers:
   still lets you stamp someone twice if they genuinely buy two drinks a minute
   apart.
 - **`redeem_reward(member)`**: refuses unless the balance covers a full card,
-  then records the redemption and consumes the stamps atomically.
-- **`undo_last_stamp(member)`**: removes the newest open stamp, but only within
-  10 minutes and never one already consumed by a redemption. Stamping the wrong
-  customer is the likeliest slip at a counter, so staff can take it back from
-  the confirmation screen or the customer's page.
+  then records the redemption and deletes the stamps it consumed, atomically.
+- **`undo_last_stamp(member)`**: removes the newest stamp, but only within 10
+  minutes. Stamping the wrong customer is the likeliest slip at a counter, so
+  staff can take it back from the confirmation screen or the customer's page. It
+  cannot reach a stamp that has already bought a drink, because that row is gone.
 
 `stamps_per_reward()` returns 5. Change the program in that one function and
 `STAMPS_PER_REWARD` in [`src/shared/members.ts`](src/shared/members.ts).
@@ -178,11 +184,11 @@ each step. Also confirmed directly against Postgres:
 - balance starts at 0 and increments
 - a second stamp within 5 seconds is rejected and the balance is unchanged
 - redeeming below a full card is refused
-- redeeming at 6 stamps consumes the 5 oldest and rolls 1 over
+- redeeming at 6 stamps deletes the 5 oldest and rolls 1 over
 - duplicate and non-numeric phone numbers are rejected
 - deleting a member cascades to their stamps and rewards
-- undo removes a fresh stamp, refuses one older than 10 minutes, and cannot
-  revive a stamp already consumed by a redemption
+- undo removes a fresh stamp and refuses one older than 10 minutes; the stamps a
+  redemption took are gone, so there is nothing there for it to revive
 - a signed cookie naming a member who no longer exists lands on the join screen
   instead of looping between `/` and `/card`
 
