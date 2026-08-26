@@ -209,10 +209,3 @@ deletes — have not been re-exercised end to end since the migration.
 Every text colour meets WCAG AA for its size, checked by calculation rather than
 by eye. Redeeming needs two taps, because it sits where `+1 STAMP` normally does
 and cannot be undone.
-
-## Not built yet
-
-- **Member verification codes.** The 4-digit step from the mockup's login flow
-  was dropped on purpose, since members are identified by phone number alone.
-- **Staff attribution.** Stamps record when they were added and nothing about who
-  added them. See the security model above.
