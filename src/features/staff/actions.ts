@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   addStamp,
@@ -10,6 +11,7 @@ import {
   STAMPS_PER_REWARD,
   undoLastStamp,
 } from "@/shared/members";
+import { overUnlockLimit } from "@/shared/throttle";
 import {
   createLocation,
   findActiveLocation,
@@ -37,13 +39,26 @@ export async function unlock(
   _prev: StaffState,
   form: FormData,
 ): Promise<StaffState> {
+  // A shift starts with one unlock, so a cap this size is invisible to staff
+  // and is the only thing standing between a 4-digit passcode and a script.
+  const ip =
+    (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (await overUnlockLimit(ip)) {
+    console.warn(`staff unlock: rate limited ${ip}`);
+    return { error: "Too many attempts. Try again in 15 minutes." };
+  }
+
   // The posted place is checked against an active row rather than trusted, so a
   // stale tab cannot unlock as a branch that has since closed.
   const place = await findActiveLocation(String(form.get("place") ?? ""));
   if (!place) return { error: "Pick a location first." };
 
   const given = String(form.get("passcode") ?? "");
-  if (!passcodeMatches(given)) return { error: "Wrong passcode." };
+  if (!passcodeMatches(given)) {
+    // The only signal that someone is working through the keyspace.
+    console.warn(`staff unlock: wrong passcode from ${ip}`);
+    return { error: "Wrong passcode." };
+  }
 
   const event = String(form.get("event") ?? "")
     .trim()

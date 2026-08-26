@@ -64,6 +64,10 @@ export type Database = {
        schema has no views. */
     Views: Record<never, never>;
     Functions: {
+      note_unlock_attempt: {
+        Args: { p_ip: string; p_max?: number; p_window?: string };
+        Returns: boolean;
+      };
       add_stamp: {
         Args: { p_member: string; p_location?: string | null };
         Returns: number;
