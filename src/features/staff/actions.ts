@@ -40,7 +40,7 @@ export async function unlock(
   form: FormData,
 ): Promise<StaffState> {
   // A shift starts with one unlock, so a cap this size is invisible to staff
-  // and is the only thing standing between a 4-digit passcode and a script.
+  // and is what stops a script working through the passcode.
   const ip =
     (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (await overUnlockLimit(ip)) {

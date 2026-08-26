@@ -18,8 +18,8 @@ alter table unlock_attempts enable row level security;
 -- Records one attempt and answers whether this address is over its limit.
 --
 -- ponytail: a fixed window, not a sliding one, so an address timed across a
--- boundary gets up to 2× p_max in quick succession. That is still four orders
--- of magnitude short of a keyspace, and a sliding window costs a row per
+-- boundary gets up to 2× p_max in quick succession. That is still far below
+-- what guessing the passcode would take, and a sliding window costs a row per
 -- attempt. Revisit only if the limit itself needs to be tight.
 create or replace function note_unlock_attempt(
   p_ip     text,
