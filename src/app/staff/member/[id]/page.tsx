@@ -145,7 +145,7 @@ export default async function StaffMemberPage({
         <div className="stack">
           {card.rewardsReady > 0 ? (
             <>
-              {/* ponytail: confirms a card is in the reward state, not which
+              {/* Confirms a card is in the reward state, not which
                   card — voucherCode hashes the member id into 10k values.
                   Derive from the reward's own uuid if this ever needs to
                   identify a specific drink. */}
