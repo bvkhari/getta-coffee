@@ -54,8 +54,19 @@ export type Database = {
         Relationships: [];
       };
       rewards: {
-        Row: { id: string; member_id: string; redeemed_at: string };
-        Insert: { id?: string; member_id: string; redeemed_at?: string };
+        Row: {
+          id: string;
+          member_id: string;
+          redeemed_at: string;
+          /** Stamps this redemption consumed. The rows themselves are gone. */
+          stamps_spent: number;
+        };
+        Insert: {
+          id?: string;
+          member_id: string;
+          redeemed_at?: string;
+          stamps_spent: number;
+        };
         Update: { redeemed_at?: string };
         Relationships: [];
       };
