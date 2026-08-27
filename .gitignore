@@ -18,3 +18,6 @@ supabase/.temp
 .vercel
 .env*
 !.env.example
+
+.npm-cache/
+.npmrc
