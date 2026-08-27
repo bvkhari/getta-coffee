@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { staffPlace } from "@/shared/session";
 import { lockUp } from "@/features/staff/actions";
-import { Keypad } from "@/features/staff/keypad";
+import { LookupPanel } from "@/features/staff/lookup-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +23,7 @@ export default async function LookupPage() {
             </button>
           </form>
         </div>
-        <Keypad />
+        <LookupPanel />
         <p className="center-note" style={{ marginTop: 26 }}>
           <Link className="link" href="/staff/locations">
             Manage locations

@@ -672,3 +672,53 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
     transform: none;
   }
 }
+
+/* ---- Customer scan code ------------------------------------------------ */
+
+/* The white plate isn't decoration. A QR needs a light quiet zone to decode,
+   and the cream page is dark enough to cost scans on a dim or dirty screen. */
+.qrblock {
+  margin: 18px auto 0;
+  max-width: 250px;
+  padding: 18px;
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
+}
+.qr svg { display: block; width: 100%; height: auto; }
+.qrnote {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---- Staff scanner ----------------------------------------------------- */
+
+.scanner {
+  position: relative;
+  margin: 18px auto 0;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--dark-line);
+}
+.scanner video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Fills the square without letterboxing; jsqr reads the full frame either
+     way, so cropping the view costs nothing but tightens what staff aim at. */
+  object-fit: cover;
+}
+.reticle {
+  position: absolute;
+  inset: 14%;
+  border: 2px solid rgba(246, 234, 218, .9);
+  border-radius: 10px;
+  pointer-events: none;
+}
