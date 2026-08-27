@@ -9,6 +9,7 @@ import { Progress } from "@/shared/ui/progress";
 import { Slots } from "@/shared/ui/slots";
 import { RefreshButton } from "@/features/membership/refresh-button";
 import { memberScanUrl, qrSvg } from "@/shared/qr";
+import { InstallHint } from "@/features/pwa/install-hint";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,10 @@ export default async function CardPage({
           />
           <p className="qrnote">Show this at the counter to collect a stamp</p>
         </div>
+
+        {/* Directly under the code, where its value is obvious: the thing you
+            hold up at the counter is worth one tap away, not three. */}
+        <InstallHint storageKey="getta-install-card" />
 
         {card.rewardsReady > 0 ? (
           <div className="stack">
