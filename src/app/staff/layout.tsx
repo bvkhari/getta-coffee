@@ -10,6 +10,15 @@ import type { Metadata } from "next";
  */
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
+  // A barista may well have both apps on one phone, so the counter app carries
+  // its own name and a maroon icon rather than sharing the customer's.
+  manifest: "/staff.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Getta Staff",
+    statusBarStyle: "black-translucent",
+  },
+  icons: { apple: "/icons/staff-apple-touch-icon.png" },
 };
 
 export default function StaffLayout({
