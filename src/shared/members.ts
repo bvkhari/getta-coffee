@@ -18,6 +18,12 @@ export type Card = {
   rewardsReady: number;
   /** Free drinks taken in the past. */
   redeemed: number;
+  /**
+   * Every stamp this member has ever collected, including the ones already
+   * spent on a free drink. The spent rows are deleted, so this is the open
+   * stamps plus what each past redemption recorded consuming.
+   */
+  lifetime: number;
   /** Newest first. `location` is null for stamps taken before tagging existed. */
   visits: { at: string; location: string | null }[];
 };
@@ -106,7 +112,7 @@ export function getCard(memberId: string): Promise<Card> {
           .order("created_at", { ascending: false }),
         db()
           .from("rewards")
-          .select("id")
+          .select("stamps_spent")
           .eq("member_id", memberId),
       ]);
 
@@ -114,11 +120,16 @@ export function getCard(memberId: string): Promise<Card> {
       if (past.error) throw past.error;
 
       const stamps = open.data.length;
+      const spent = past.data.reduce(
+        (total, row) => total + (row.stamps_spent as number),
+        0,
+      );
 
       return {
         stamps,
         rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
         redeemed: past.data.length,
+        lifetime: spent + stamps,
         visits: open.data.map((row) => ({
           at: row.created_at as string,
           location: row.location as string | null,

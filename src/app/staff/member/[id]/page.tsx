@@ -124,6 +124,15 @@ export default async function StaffMemberPage({
           <p className="count">
             {card.stamps} of {STAMPS_PER_REWARD} stamps
           </p>
+          {/* The card above is progress toward the next drink; this is the
+              running total the shop asked for, and it never resets. Reuses
+              .ph rather than earning a class of its own. */}
+          <p className="ph">
+            {card.lifetime} collected all time
+            {card.redeemed > 0
+              ? ` · ${card.redeemed} free drink${card.redeemed === 1 ? "" : "s"} taken`
+              : ""}
+          </p>
         </div>
 
         {dup ? (
