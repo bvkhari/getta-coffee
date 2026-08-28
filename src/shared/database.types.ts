@@ -53,6 +53,12 @@ export type Database = {
         Update: { name?: string; active?: boolean; asks_event?: boolean };
         Relationships: [];
       };
+      stamp_tallies: {
+        Row: { member_id: string; month: string; stamps: number };
+        Insert: { member_id: string; month: string; stamps?: number };
+        Update: { stamps?: number };
+        Relationships: [];
+      };
       rewards: {
         Row: {
           id: string;
@@ -87,6 +93,19 @@ export type Database = {
       undo_last_stamp: {
         Args: { p_member: string; p_within?: string };
         Returns: boolean;
+      };
+      leaderboard: {
+        Args: { p_month?: string | null; p_limit?: number };
+        Returns: {
+          member_id: string;
+          name: string;
+          stamps: number;
+          position: number;
+        }[];
+      };
+      leaderboard_position: {
+        Args: { p_member: string; p_month?: string | null };
+        Returns: { position: number; stamps: number; total: number }[];
       };
     };
   };

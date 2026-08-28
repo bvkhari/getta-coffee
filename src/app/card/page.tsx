@@ -114,6 +114,9 @@ export default async function CardPage({
         </div>
 
         <div className="stack">
+          <Link className="btn ghost" href="/card/leaderboard">
+            LEADERBOARD
+          </Link>
           <RefreshButton />
         </div>
 

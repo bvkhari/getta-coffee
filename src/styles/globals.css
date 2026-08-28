@@ -817,3 +817,79 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
   padding: 0;
   font-size: 12px;
 }
+
+/* ---- Leaderboard ------------------------------------------------------- */
+
+.scopes {
+  display: flex;
+  gap: 6px;
+  margin: 18px auto 0;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--card-sunk);
+  border: 1px solid var(--line);
+}
+.scope {
+  flex: 1;
+  padding: 11px 8px;
+  border-radius: 999px;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+.scope.on {
+  background: var(--maroon);
+  color: var(--ivory);
+}
+
+.board {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.board li {
+  display: grid;
+  /* Fixed rank column so the names line up however wide the numbers get. */
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+.board .pos {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.board .who {
+  font-size: 14px;
+  color: var(--espresso);
+  /* A long name truncates rather than pushing the count off the row. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.board .tally {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--maroon);
+  font-variant-numeric: tabular-nums;
+}
+/* The viewer's own row, so they can find themselves without reading. */
+.board li.you {
+  background: var(--gold-lift);
+  border-color: var(--gold);
+}
+.board li.you .who { font-weight: 700; }
+.board.mine { margin-top: 10px; }
