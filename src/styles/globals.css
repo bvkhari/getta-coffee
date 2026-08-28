@@ -679,7 +679,9 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
    and the cream page is dark enough to cost scans on a dim or dirty screen. */
 .qrblock {
   margin: 18px auto 0;
-  max-width: 250px;
+  /* Level H packs 53 modules where M used 41, so the plate grew to keep each
+     module big enough for another phone's camera to resolve. */
+  max-width: 280px;
   padding: 18px;
   background: #FFFFFF;
   border: 1px solid var(--line);
