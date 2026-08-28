@@ -728,16 +728,18 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 /* ---- Install to home screen -------------------------------------------- */
 
 .installhint {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  justify-content: space-between;
   margin: 18px auto 0;
   padding: 14px 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--card-sunk);
   text-align: left;
+}
+.installhint-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 .dark .installhint {
   background: var(--dark-elev);
@@ -788,3 +790,30 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 .prose .bm { margin-top: 22px; font-size: 12px; color: var(--muted); }
 .consent { margin: 12px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
 .foot a, .consent a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+/* The tutorial itself. Numbered because the order genuinely matters -- the
+   Share sheet has to be open before "Add to Home Screen" exists to tap. */
+.installsteps {
+  margin: 14px 0 0;
+  padding: 0 0 0 20px;
+  display: grid;
+  gap: 9px;
+}
+.installsteps li {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.dark .installsteps li { color: var(--dark-muted); }
+.installsteps b { color: var(--espresso); font-weight: 700; }
+.dark .installsteps b { color: var(--dark-text); }
+/* Glyphs sit inline in a sentence, so they ride the text baseline. */
+.installsteps svg {
+  vertical-align: -3px;
+  margin: 0 2px;
+}
+.installhint-dismiss {
+  margin-top: 12px;
+  padding: 0;
+  font-size: 12px;
+}
