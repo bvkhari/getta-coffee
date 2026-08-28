@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { currentMember, getCard } from "@/shared/members";
 import { logOut } from "@/features/membership/actions";
-import { formatVisit } from "@/shared/format";
 import { Footer } from "@/shared/ui/footer";
 import { Progress } from "@/shared/ui/progress";
 import { Slots } from "@/shared/ui/slots";
@@ -83,32 +82,6 @@ export default async function CardPage({
                 ? `VIEW MY ${card.rewardsReady} FREE DRINKS`
                 : "VIEW MY FREE DRINK"}
             </Link>
-          </div>
-        ) : null}
-
-        {/* Hidden entirely until there is something to list. A heading over an
-            empty state is clutter on the screen a new member sees first, and
-            the code above already tells them what to do next. */}
-        {card.visits.length > 0 || card.redeemed > 0 ? (
-          <div className="hist">
-            <h2>Visit history</h2>
-            <ul>
-              {card.visits.map((visit) => (
-                <li key={visit.at}>
-                  <span>
-                    Receipt collected
-                    {visit.location ? ` · ${visit.location}` : ""}
-                  </span>
-                  <span>{formatVisit(visit.at)}</span>
-                </li>
-              ))}
-              {card.redeemed > 0 ? (
-                <li>
-                  <span>Free drink redeemed</span>
-                  <span>{card.redeemed}× to date</span>
-                </li>
-              ) : null}
-            </ul>
           </div>
         ) : null}
 
