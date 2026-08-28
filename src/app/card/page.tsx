@@ -86,13 +86,12 @@ export default async function CardPage({
           </div>
         ) : null}
 
-        <div className="hist">
-          <h2>Visit history</h2>
-          {card.visits.length === 0 && card.redeemed === 0 ? (
-            <p className="none">
-              No visits yet. Your first stamp lands the next time you order.
-            </p>
-          ) : (
+        {/* Hidden entirely until there is something to list. A heading over an
+            empty state is clutter on the screen a new member sees first, and
+            the code above already tells them what to do next. */}
+        {card.visits.length > 0 || card.redeemed > 0 ? (
+          <div className="hist">
+            <h2>Visit history</h2>
             <ul>
               {card.visits.map((visit) => (
                 <li key={visit.at}>
@@ -110,8 +109,8 @@ export default async function CardPage({
                 </li>
               ) : null}
             </ul>
-          )}
-        </div>
+          </div>
+        ) : null}
 
         <div className="stack">
           <Link className="btn ghost" href="/card/leaderboard">
