@@ -48,11 +48,27 @@ button {
 
 html, body {
   margin: 0;
-  background: var(--dark);
+  /* Cream, not espresso. iOS rubber-bands the whole document, and whatever is
+     painted here is what shows through above the page when it does. Installed
+     to a home screen there is no browser chrome to hide it, so a dark root
+     behind a cream page reads as the app coming apart. */
+  background: var(--ivory);
   color: var(--espresso);
   font-family: var(--body);
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
+  /* Stops the bounce outright where it is supported. The background above is
+     the fallback for where it is not. */
+  overscroll-behavior-y: none;
+}
+
+/* The counter screens are dark, so the root follows whichever shell is on
+   screen rather than committing to one colour for both apps. */
+html:has(.shell.dark),
+html:has(.loading.dark),
+body:has(.shell.dark),
+body:has(.loading.dark) {
+  background: var(--dark);
 }
 
 /* One definition each, shared with the loading screen — if these drift, the
@@ -100,6 +116,10 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 34px 24px 30px;
+  /* Installed to a home screen there is no browser toolbar between the last
+     element and the home indicator, which was sitting on top of the QR caption.
+     Zero in a browser tab, where the inset does not exist. */
+  padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
   animation: enter .3s var(--ease) both;
 }
 @keyframes enter { from { opacity: 0; transform: translateY(8px); } }

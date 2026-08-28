@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 /**
  * The counter screen is passcode-gated and has no business in a search index.
@@ -16,9 +16,16 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "Getta Staff",
-    statusBarStyle: "black-translucent",
+    // Not black-translucent: that pulls the page up under the status bar, and
+    // with no inset padding the clock sat on top of the staff bar.
+    statusBarStyle: "default",
   },
   icons: { apple: "/icons/staff-apple-touch-icon.png" },
+};
+
+/** The counter app keeps the dark status bar the customer app gave up. */
+export const viewport: Viewport = {
+  themeColor: "#241009",
 };
 
 export default function StaffLayout({
