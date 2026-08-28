@@ -767,3 +767,22 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
   font-size: 11px;
   letter-spacing: .1em;
 }
+
+/* ---------- privacy notice ---------- */
+
+.prose { padding: 20px 20px 22px; font-size: 14px; line-height: 1.6; }
+.prose p, .prose ul { margin: 12px 0 0; }
+.prose ul { padding-left: 18px; }
+.prose li { margin-top: 4px; }
+.prose h2 {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 22px 0 0;
+}
+.prose .bm { margin-top: 22px; font-size: 12px; color: var(--muted); }
+.consent { margin: 12px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
+.foot a, .consent a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }

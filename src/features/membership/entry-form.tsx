@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { join, logIn, type FormState } from "@/features/membership/actions";
 
@@ -59,6 +60,12 @@ export function EntryForm() {
           <button className="btn" type="submit" disabled={joinPending}>
             {joinPending ? "JOINING…" : "JOIN GETTA REWARDS"}
           </button>
+          {/* PDPA wants the notice at the point of collection, not buried in a
+              footer, so it sits with the button that hands us the number. */}
+          <p className="consent">
+            By joining you agree to our{" "}
+            <Link href="/privacy">Privacy Notice</Link>.
+          </p>
           <p className="err" role="alert">
             {joinState.error ?? ""}
           </p>
