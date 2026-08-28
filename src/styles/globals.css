@@ -327,7 +327,6 @@ input.t:focus {
   margin: 0;
 }
 .dark .member .name { color: var(--dark-text); }
-.dark .member .since { color: var(--dark-muted); }
 
 .stampcard {
   margin-top: 18px;
