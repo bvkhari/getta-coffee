@@ -51,7 +51,6 @@ export default async function CardPage({
 
         <div className="member">
           <p className="name">{member.name}</p>
-          <span className="since">{member.phone}</span>
         </div>
 
         <div className="stampcard">
