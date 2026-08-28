@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { currentMember, getCard } from "@/shared/members";
 import { logOut } from "@/features/membership/actions";
 import { Footer } from "@/shared/ui/footer";
+import { Wordmark } from "@/shared/ui/wordmark";
 import { Progress } from "@/shared/ui/progress";
 import { Slots } from "@/shared/ui/slots";
 import { RefreshButton } from "@/features/membership/refresh-button";
@@ -38,9 +39,12 @@ export default async function CardPage({
   return (
     <div className="shell">
       <main className="screen">
-        <p className="eyebrow">
-          {welcome ? `Welcome, ${firstName}` : "Getta Rewards"}
-        </p>
+        <Wordmark />
+
+        {/* The eyebrow now carries only the greeting. A returning member gets
+            the mark and nothing else above their name; the label that used to
+            sit here said what the logo says. */}
+        {welcome ? <p className="eyebrow">Welcome, {firstName}</p> : null}
 
         {welcome ? (
           <p className="sub">
