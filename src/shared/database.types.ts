@@ -107,12 +107,12 @@ export type Database = {
           member_id: string;
           name: string;
           stamps: number;
-          position: number;
+          standing: number;
         }[];
       };
       leaderboard_position: {
         Args: { p_member: string; p_month?: string | null };
-        Returns: { position: number; stamps: number; total: number }[];
+        Returns: { standing: number; stamps: number; total: number }[];
       };
     };
   };

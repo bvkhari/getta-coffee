@@ -164,7 +164,9 @@ create or replace function leaderboard(
   p_month date default null,
   p_limit int  default 10
 )
-returns table (member_id uuid, name text, stamps bigint, position bigint)
+-- Named "standing" because "position" is reserved: it is the built-in
+-- position(substring in string), and Postgres rejects it here unquoted.
+returns table (member_id uuid, name text, stamps bigint, standing bigint)
 language sql
 stable
 security definer
@@ -182,13 +184,13 @@ as $$
 $$;
 
 -- One member's standing, for the line shown when they are outside the top ten.
--- position 0 means they have collected nothing in this scope yet, which is not
+-- standing 0 means they have collected nothing in this scope yet, which is not
 -- the same as being last and should not be rendered as a rank.
 create or replace function leaderboard_position(
   p_member uuid,
   p_month  date default null
 )
-returns table (position bigint, stamps bigint, total bigint)
+returns table (standing bigint, stamps bigint, total bigint)
 language sql
 stable
 security definer
@@ -197,12 +199,12 @@ as $$
   with ranked as (
     select t.member_id,
            t.stamps,
-           rank() over (order by t.stamps desc) as position
+           rank() over (order by t.stamps desc) as standing
       from member_totals(p_month) t
      where t.stamps > 0
   )
   select
-    coalesce((select r.position from ranked r where r.member_id = p_member), 0),
+    coalesce((select r.standing from ranked r where r.member_id = p_member), 0),
     coalesce((select r.stamps   from ranked r where r.member_id = p_member), 0),
     (select count(*) from ranked)
 $$;

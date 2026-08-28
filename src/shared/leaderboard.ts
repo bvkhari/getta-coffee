@@ -65,17 +65,28 @@ export function getBoard(memberId: string, scope: Scope): Promise<Board> {
       if (board.error) throw board.error;
       if (mine.error) throw mine.error;
 
-      const standing = (mine.data as unknown as Board["you"][])[0];
+      // The SQL column is "standing", not "position": the latter is reserved
+      // in Postgres. The rename stops at this boundary.
+      const standing = (
+        mine.data as unknown as { standing: number; stamps: number; total: number }[]
+      )[0];
 
       return {
-        rows: (board.data as unknown as BoardRow[]).map((row) => ({
-          memberId: (row as unknown as { member_id: string }).member_id,
+        rows: (
+          board.data as unknown as {
+            member_id: string;
+            name: string;
+            stamps: number;
+            standing: number;
+          }[]
+        ).map((row) => ({
+          memberId: row.member_id,
           name: row.name,
           stamps: Number(row.stamps),
-          position: Number(row.position),
+          position: Number(row.standing),
         })),
         you: {
-          position: Number(standing?.position ?? 0),
+          position: Number(standing?.standing ?? 0),
           stamps: Number(standing?.stamps ?? 0),
           total: Number(standing?.total ?? 0),
         },
