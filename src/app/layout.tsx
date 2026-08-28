@@ -32,7 +32,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#241009",
+  // The customer app is cream. iOS paints the status-bar strip of an installed
+  // app with this, and espresso there put a dark band above a cream page. The
+  // staff layout sets its own, because the counter app really is dark.
+  themeColor: "#FBF4E9",
   colorScheme: "only light",
 };
 
