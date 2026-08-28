@@ -9,7 +9,14 @@ export type Database = {
   public: {
     Tables: {
       members: {
-        Row: { id: string; name: string; phone: string; created_at: string };
+        Row: {
+          id: string;
+          name: string;
+          phone: string;
+          created_at: string;
+          /** Set when a member asks to be left off the leaderboard. */
+          hide_from_board: boolean;
+        };
         Insert: {
           id?: string;
           name: string;

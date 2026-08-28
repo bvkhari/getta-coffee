@@ -121,6 +121,13 @@ begin
 end;
 $$;
 
+-- Opt-out. The privacy notice tells members they can ask to be left off the
+-- board, and a promise in a privacy notice needs something behind it. Set this
+-- from the dashboard when someone asks; they keep collecting stamps and earning
+-- drinks exactly as before, they simply stop being ranked.
+alter table members
+  add column if not exists hide_from_board boolean not null default false;
+
 -- Every member's total for one scope: null p_month means all time.
 --
 -- Factored out so the board and a single member's standing cannot drift apart.
@@ -147,6 +154,7 @@ as $$
                     where t.member_id = m.id and t.month = p_month), 0)
      end)::bigint
   from members m
+ where not m.hide_from_board
 $$;
 
 -- The board itself. Ties share a position -- two customers on 40 stamps are
