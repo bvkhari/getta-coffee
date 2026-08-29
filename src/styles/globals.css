@@ -834,6 +834,19 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 
 /* ---- Leaderboard ------------------------------------------------------- */
 
+/* Between the eyebrow and the entry screen's hero: the board is the whole
+   screen, so it gets a real heading rather than a label above one. */
+h1.boardtitle {
+  font-family: var(--display);
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 27px;
+  letter-spacing: -.015em;
+  color: var(--maroon);
+  text-align: center;
+  margin: 18px 0 0;
+}
+
 /* The initial standing in for a photograph. The app knows a member's name and
    nothing else, so this is the only likeness available -- and it still does the
    avatar's real job, which is letting someone find their own row by shape

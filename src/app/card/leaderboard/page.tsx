@@ -34,7 +34,7 @@ export default async function LeaderboardPage() {
   return (
     <div className="shell">
       <main className="screen">
-        <p className="eyebrow">Leaderboard</p>
+        <h1 className="boardtitle">Leaderboard</h1>
 
         {board.rows.length === 0 ? (
           <p className="none" style={{ marginTop: 24 }}>
