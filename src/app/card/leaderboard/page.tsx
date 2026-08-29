@@ -15,6 +15,18 @@ export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Leaderboard · Getta Rewards" };
 
+/**
+ * Stands in for the avatar the reference design has and this app does not: a
+ * member is a name and a phone number, so initials are the only likeness on
+ * hand. Two letters where the name gives two, one where it doesn't.
+ */
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  const first = words[0]?.[0] ?? "";
+  const last = words.length > 1 ? words[words.length - 1][0] : "";
+  return (first + last).toUpperCase();
+}
+
 export default async function LeaderboardPage({
   searchParams,
 }: {
@@ -28,6 +40,9 @@ export default async function LeaderboardPage({
 
   const board = await getBoard(member.id, scope);
   const inTopTen = board.rows.some((row) => row.memberId === member.id);
+
+  const podium = board.rows.slice(0, 3);
+  const rest = podium.length === 3 ? board.rows.slice(3) : board.rows;
 
   return (
     <div className="shell">
@@ -63,21 +78,57 @@ export default async function LeaderboardPage({
             Be the first.
           </p>
         ) : (
-          <ol className="board">
-            {board.rows.map((row) => {
-              const isYou = row.memberId === member.id;
-              return (
-                <li key={row.memberId} className={isYou ? "you" : undefined}>
-                  <span className="pos">{row.position}</span>
-                  <span className="who">{isYou ? "You" : row.name}</span>
-                  <span className="tally">
-                    {row.stamps}
-                    <Bean />
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
+          <>
+            {/* The podium needs three to be a podium. Below that -- a new month,
+                a quiet week -- everyone goes in the list and nobody is standing
+                on a block with two empty spaces beside them. */}
+            {podium.length === 3 ? (
+              <ol className="podium">
+                {podium.map((row) => {
+                  const isYou = row.memberId === member.id;
+                  return (
+                    <li
+                      key={row.memberId}
+                      className={`place p${row.position}${isYou ? " you" : ""}`}
+                    >
+                      <span className="face" aria-hidden="true">
+                        {initials(row.name)}
+                      </span>
+                      <span className="who">{isYou ? "You" : row.name}</span>
+                      <span className="tally">
+                        {row.stamps}
+                        <Bean />
+                      </span>
+                      <span className="plinth" aria-hidden="true">
+                        {row.position}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : null}
+
+            {rest.length > 0 ? (
+              <ol className="board" start={rest[0].position}>
+                {rest.map((row) => {
+                  const isYou = row.memberId === member.id;
+                  return (
+                    <li key={row.memberId} className={isYou ? "you" : undefined}>
+                      <span className="pos">{row.position}</span>
+                      <span className="face" aria-hidden="true">
+                        {initials(row.name)}
+                      </span>
+                      <span className="who">{isYou ? "You" : row.name}</span>
+                      <span className="tally">
+                        {row.stamps}
+                        <Bean />
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : null}
+          </>
         )}
 
         {/* Shown only when they are not already on the board above, so nobody
@@ -86,6 +137,9 @@ export default async function LeaderboardPage({
           <ol className="board mine" start={board.you.position}>
             <li className="you">
               <span className="pos">{board.you.position}</span>
+              <span className="face" aria-hidden="true">
+                {initials(member.name)}
+              </span>
               <span className="who">You</span>
               <span className="tally">
                 {board.you.stamps}

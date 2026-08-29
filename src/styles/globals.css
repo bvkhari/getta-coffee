@@ -845,7 +845,9 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 }
 .scope {
   flex: 1;
-  padding: 11px 8px;
+  /* "THIS MONTH" broke onto a second line and stretched the whole control. */
+  white-space: nowrap;
+  padding: 11px 6px;
   border-radius: 999px;
   text-align: center;
   text-decoration: none;
@@ -860,23 +862,150 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
   color: var(--ivory);
 }
 
+/* The initial standing in for a photograph. The app knows a member's name and
+   nothing else, so this is the only likeness available -- and it still does the
+   avatar's real job, which is letting someone find their own row by shape
+   rather than by reading every name. */
+.face {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(155deg, var(--maroon-soft), var(--maroon));
+  color: var(--ivory);
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: .01em;
+  flex: none;
+}
+
+/* ---- podium ---- */
+
+.podium {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+  display: grid;
+  /* The winner's column is wider as well as taller. */
+  grid-template-columns: 1fr 1.14fr 1fr;
+  align-items: end;
+  gap: 6px;
+}
+.podium .place {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+/* Read in rank order, seen in podium order: first in the middle, raised above
+   the two beside it. The list stays 1-2-3 in the markup for anyone whose reader
+   is speaking it. */
+.podium .p1 { order: 2; }
+.podium .p2 { order: 1; }
+.podium .p3 { order: 3; }
+
+.podium .face {
+  width: 54px;
+  height: 54px;
+  font-size: 17px;
+  /* Inner cream ring separates the metal from the avatar. */
+  box-shadow: 0 0 0 3px var(--ivory), 0 0 0 5px var(--line);
+}
+.podium .p1 .face {
+  width: 66px;
+  height: 66px;
+  font-size: 21px;
+  box-shadow: 0 0 0 3px var(--ivory), 0 0 0 5px var(--gold);
+}
+.podium .p2 .face { box-shadow: 0 0 0 3px var(--ivory), 0 0 0 5px #BCA894; }
+.podium .p3 .face { box-shadow: 0 0 0 3px var(--ivory), 0 0 0 5px #B58150; }
+
+.podium .who {
+  max-width: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--espresso);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.podium .tally {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--maroon);
+  font-variant-numeric: tabular-nums;
+}
+.podium .p1 .tally {
+  background: var(--gold-lift);
+  border-color: var(--gold);
+}
+.podium .tally svg {
+  width: 1.05em;
+  height: 1.05em;
+  --bean-crease: rgba(255,252,246,.55);
+}
+
+/* The blocks themselves. Heights carry the ranking on their own, so the numeral
+   can sit back and be texture rather than another thing to read. */
+.podium .plinth {
+  width: 100%;
+  margin-top: 3px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(180deg, var(--card), var(--card-sunk));
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 800;
+  color: rgba(107,33,24,.26);
+}
+.podium .p1 .plinth {
+  height: 76px;
+  background: linear-gradient(180deg, #FFF8E8, var(--gold-lift));
+  border-color: var(--gold);
+  color: rgba(107,33,24,.34);
+}
+.podium .p2 .plinth { height: 56px; }
+.podium .p3 .plinth { height: 44px; }
+
+.podium .you .who { font-weight: 800; color: var(--maroon); }
+
 .board {
   list-style: none;
-  margin: 18px 0 0;
+  /* Sits directly under the podium blocks, which have no bottom edge of their
+     own -- the first row's top border is what closes them off. */
+  margin: 0;
   padding: 0;
   display: grid;
   gap: 2px;
 }
 .board li {
   display: grid;
-  /* Fixed rank column so the names line up however wide the numbers get. */
-  grid-template-columns: 34px 1fr auto;
+  /* Fixed rank and face columns so the names line up however wide the numbers
+     get. */
+  grid-template-columns: 26px 32px 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 13px 14px;
+  padding: 11px 12px;
   border-radius: 10px;
   background: var(--card);
   border: 1px solid var(--line);
+}
+.board .face {
+  width: 32px;
+  height: 32px;
+  font-size: 11.5px;
 }
 .board .pos {
   font-family: var(--display);
@@ -918,3 +1047,8 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 }
 .board li.you .who { font-weight: 700; }
 .board.mine { margin-top: 10px; }
+/* No podium above it -- fewer than three members on the board -- so the list
+   provides its own breathing room. */
+.podium + .board { margin-top: 8px; }
+.scopes + .board,
+.center-note + .board { margin-top: 18px; }
