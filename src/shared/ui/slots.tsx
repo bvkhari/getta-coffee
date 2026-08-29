@@ -1,6 +1,12 @@
 import { STAMPS_PER_REWARD } from "@/shared/members";
 
-function Bean() {
+/**
+ * The bean takes its body from `currentColor` and its crease from
+ * `--bean-crease`, because the two flip depending on what it sits on: a cream
+ * bean on a maroon slot needs a dark crease, a maroon bean on the cream
+ * leaderboard needs a light one. The fallback is the stamp card's.
+ */
+export function Bean() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <g transform="rotate(-28 12 12)">
@@ -8,7 +14,7 @@ function Bean() {
         <path
           d="M12 3.6C8.7 7.2 15.3 16.8 12 20.4"
           fill="none"
-          stroke="rgba(107,33,24,.55)"
+          stroke="var(--bean-crease, rgba(107,33,24,.55))"
           strokeWidth="1.7"
           strokeLinecap="round"
         />

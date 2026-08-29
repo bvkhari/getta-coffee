@@ -9,6 +9,7 @@ import {
   type Scope,
 } from "@/shared/leaderboard";
 import { Footer } from "@/shared/ui/footer";
+import { Bean } from "@/shared/ui/slots";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,10 @@ export default async function LeaderboardPage({
                 <li key={row.memberId} className={isYou ? "you" : undefined}>
                   <span className="pos">{row.position}</span>
                   <span className="who">{isYou ? "You" : row.name}</span>
-                  <span className="tally">{row.stamps}</span>
+                  <span className="tally">
+                    {row.stamps}
+                    <Bean />
+                  </span>
                 </li>
               );
             })}
@@ -83,7 +87,10 @@ export default async function LeaderboardPage({
             <li className="you">
               <span className="pos">{board.you.position}</span>
               <span className="who">You</span>
-              <span className="tally">{board.you.stamps}</span>
+              <span className="tally">
+                {board.you.stamps}
+                <Bean />
+              </span>
             </li>
           </ol>
         ) : null}

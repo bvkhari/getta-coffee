@@ -894,11 +894,22 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
   white-space: nowrap;
 }
 .board .tally {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-family: var(--display);
   font-size: 14px;
   font-weight: 700;
   color: var(--maroon);
   font-variant-numeric: tabular-nums;
+}
+/* The bean says what the number counts, so the rows need no "stamps" heading.
+   Sized off the text rather than fixed, so it tracks the number it follows. */
+.board .tally svg {
+  width: 1.05em;
+  height: 1.05em;
+  /* Maroon bean on a cream row, so the crease has to come back the other way. */
+  --bean-crease: rgba(255,252,246,.55);
 }
 /* The viewer's own row, so they can find themselves without reading. */
 .board li.you {
