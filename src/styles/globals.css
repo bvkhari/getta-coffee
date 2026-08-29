@@ -786,7 +786,7 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
   letter-spacing: .1em;
 }
 
-/* ---------- privacy notice ---------- */
+/* ---------- privacy policy ---------- */
 
 .prose { padding: 20px 20px 22px; font-size: 14px; line-height: 1.6; }
 .prose p, .prose ul { margin: 12px 0 0; }
