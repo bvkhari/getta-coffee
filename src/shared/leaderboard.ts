@@ -1,8 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { db } from "@/shared/supabase";
 
-export type Scope = "all" | "month";
-
 export type BoardRow = {
   memberId: string;
   name: string;
@@ -23,31 +21,6 @@ export type Board = {
 export const BOARD_SIZE = 10;
 
 /**
- * The first day of the current month, in the shop's timezone.
- *
- * The server runs in UTC, so on the 1st of the month in Malaysia this would
- * otherwise still be reporting the month that just ended -- for the eight hours
- * that matter most to anyone watching a monthly board reset.
- */
-export function currentMonth(): string {
-  const ym = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kuala_Lumpur",
-    year: "numeric",
-    month: "2-digit",
-  }).format(new Date());
-  return `${ym}-01`;
-}
-
-/** Human label for the month a board is showing. */
-export function monthLabel(month: string): string {
-  return new Date(`${month}T00:00:00Z`).toLocaleDateString("en-GB", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-/**
  * Both halves of a board in one place.
  *
  * Cached briefly rather than tagged: a leaderboard changes whenever anyone in
@@ -55,14 +28,12 @@ export function monthLabel(month: string): string {
  * customer's cache. Half a minute stale is invisible on a ranking and saves the
  * database from a full aggregate on every page view.
  */
-export function getBoard(memberId: string, scope: Scope): Promise<Board> {
-  const month = scope === "month" ? currentMonth() : null;
-
+export function getBoard(memberId: string): Promise<Board> {
   return unstable_cache(
     async (): Promise<Board> => {
       const [board, mine] = await Promise.all([
-        db().rpc("leaderboard", { p_month: month, p_limit: BOARD_SIZE }),
-        db().rpc("leaderboard_position", { p_member: memberId, p_month: month }),
+        db().rpc("leaderboard", { p_limit: BOARD_SIZE }),
+        db().rpc("leaderboard_position", { p_member: memberId }),
       ]);
 
       if (board.error) throw board.error;
@@ -97,7 +68,7 @@ export function getBoard(memberId: string, scope: Scope): Promise<Board> {
     },
     // The member id is in the key because "you" differs per viewer, even though
     // the rows do not.
-    ["leaderboard", scope, month ?? "all", memberId],
+    ["leaderboard", memberId],
     { revalidate: 30 },
   )();
 }

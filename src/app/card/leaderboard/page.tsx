@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentMember } from "@/shared/members";
-import {
-  BOARD_SIZE,
-  currentMonth,
-  getBoard,
-  monthLabel,
-  type Scope,
-} from "@/shared/leaderboard";
+import { BOARD_SIZE, getBoard } from "@/shared/leaderboard";
 import { Footer } from "@/shared/ui/footer";
 import { Bean } from "@/shared/ui/slots";
 
@@ -27,18 +21,11 @@ function initials(name: string): string {
   return (first + last).toUpperCase();
 }
 
-export default async function LeaderboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ scope?: string }>;
-}) {
+export default async function LeaderboardPage() {
   const member = await currentMember();
   if (!member) redirect("/");
 
-  const { scope: raw } = await searchParams;
-  const scope: Scope = raw === "month" ? "month" : "all";
-
-  const board = await getBoard(member.id, scope);
+  const board = await getBoard(member.id);
   const inTopTen = board.rows.some((row) => row.memberId === member.id);
 
   const podium = board.rows.slice(0, 3);
@@ -49,39 +36,15 @@ export default async function LeaderboardPage({
       <main className="screen">
         <p className="eyebrow">Leaderboard</p>
 
-        <div className="scopes" role="tablist">
-          <Link
-            className={scope === "all" ? "scope on" : "scope"}
-            href="/card/leaderboard"
-            role="tab"
-            aria-selected={scope === "all"}
-          >
-            ALL TIME
-          </Link>
-          <Link
-            className={scope === "month" ? "scope on" : "scope"}
-            href="/card/leaderboard?scope=month"
-            role="tab"
-            aria-selected={scope === "month"}
-          >
-            THIS MONTH
-          </Link>
-        </div>
-
-        {scope === "month" ? (
-          <p className="center-note">{monthLabel(currentMonth())}</p>
-        ) : null}
-
         {board.rows.length === 0 ? (
           <p className="none" style={{ marginTop: 24 }}>
-            No stamps collected yet this {scope === "month" ? "month" : "year"}.
-            Be the first.
+            No stamps collected yet. Be the first.
           </p>
         ) : (
           <>
-            {/* The podium needs three to be a podium. Below that -- a new month,
-                a quiet week -- everyone goes in the list and nobody is standing
-                on a block with two empty spaces beside them. */}
+            {/* The podium needs three to be a podium. Below that -- the first
+                weeks of the card -- everyone goes in the list and nobody is
+                standing on a block with two empty spaces beside them. */}
             {podium.length === 3 ? (
               <ol className="podium">
                 {podium.map((row) => {
@@ -160,8 +123,7 @@ export default async function LeaderboardPage({
 
         {board.you.position === 0 ? (
           <p className="center-note">
-            You haven&rsquo;t collected a stamp{" "}
-            {scope === "month" ? "this month" : "yet"}. Your next one puts you on
+            You haven&rsquo;t collected a stamp yet. Your next one puts you on
             the board.
           </p>
         ) : null}

@@ -65,9 +65,8 @@ export default function PrivacyPage() {
           </p>
           <p>
             Other members can see the leaderboard. If you are among the ten
-            highest stamp counts, either all time or for the current month, your
-            name and that count are shown there to anyone signed in to a Getta
-            Rewards card. Nothing else appears: not your phone number, not where
+            highest stamp counts, your name and that count are shown there to
+            anyone signed in to a Getta Rewards card. Nothing else appears: not your phone number, not where
             or when you were stamped. Everyone else sees only their own position,
             and if you would rather not appear at all, tell us and we will take
             you off it.

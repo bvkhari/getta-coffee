@@ -834,34 +834,6 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 
 /* ---- Leaderboard ------------------------------------------------------- */
 
-.scopes {
-  display: flex;
-  gap: 6px;
-  margin: 18px auto 0;
-  padding: 5px;
-  border-radius: 999px;
-  background: var(--card-sunk);
-  border: 1px solid var(--line);
-}
-.scope {
-  flex: 1;
-  /* "THIS MONTH" broke onto a second line and stretched the whole control. */
-  white-space: nowrap;
-  padding: 11px 6px;
-  border-radius: 999px;
-  text-align: center;
-  text-decoration: none;
-  font-family: var(--display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  color: var(--muted);
-}
-.scope.on {
-  background: var(--maroon);
-  color: var(--ivory);
-}
-
 /* The initial standing in for a photograph. The app knows a member's name and
    nothing else, so this is the only likeness available -- and it still does the
    avatar's real job, which is letting someone find their own row by shape
@@ -983,9 +955,7 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 
 .board {
   list-style: none;
-  /* Sits directly under the podium blocks, which have no bottom edge of their
-     own -- the first row's top border is what closes them off. */
-  margin: 0;
+  margin: 18px 0 0;
   padding: 0;
   display: grid;
   gap: 2px;
@@ -1047,8 +1017,6 @@ label.check input { width: 18px; height: 18px; accent-color: var(--go); }
 }
 .board li.you .who { font-weight: 700; }
 .board.mine { margin-top: 10px; }
-/* No podium above it -- fewer than three members on the board -- so the list
-   provides its own breathing room. */
-.podium + .board { margin-top: 8px; }
-.scopes + .board,
-.center-note + .board { margin-top: 18px; }
+/* Flush under the podium blocks, which have no bottom edge of their own -- the
+   first row's top border is what closes them off. */
+.podium + .board { margin-top: 0; }
