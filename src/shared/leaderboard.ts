@@ -7,7 +7,10 @@ export type BoardRow = {
   memberId: string;
   name: string;
   stamps: number;
-  /** Shared by ties: two members on 40 stamps are both 3rd. */
+  /**
+   * Unique to this member. Equal totals are separated by who reached that
+   * total first, so nobody shares a place and the order never wobbles.
+   */
   position: number;
 };
 

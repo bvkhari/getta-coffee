@@ -61,9 +61,20 @@ export type Database = {
         Relationships: [];
       };
       stamp_tallies: {
-        Row: { member_id: string; month: string; stamps: number };
-        Insert: { member_id: string; month: string; stamps?: number };
-        Update: { stamps?: number };
+        Row: {
+          member_id: string;
+          month: string;
+          stamps: number;
+          /** When this member's newest stamp of that month was added. */
+          last_stamp_at: string | null;
+        };
+        Insert: {
+          member_id: string;
+          month: string;
+          stamps?: number;
+          last_stamp_at?: string | null;
+        };
+        Update: { stamps?: number; last_stamp_at?: string | null };
         Relationships: [];
       };
       rewards: {
