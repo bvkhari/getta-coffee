@@ -75,11 +75,10 @@ decisions that look odd from the code alone. The README covers setup, the securi
 
 ## Branches
 
-**`staging` is what production runs**, as of 2026-08-30. Vercel is not connected to the repo, so a
-deploy ships whatever tree it is run from, and `vercel deploy --prod` was run from `staging` — which
-put the leaderboard, the reworded privacy page and the podium in front of customers along with the
-card fix. Work from `staging`.
+`main` and `staging` hold the same code, and it is the code production runs. They were merged level
+on 2026-08-30, after a spell where `staging` carried the leaderboard alone and `origin/main` had
+fallen behind local `main` by the QR code, the PWA and the scanner.
 
-`main` is behind that and no longer describes anything deployed; `origin/main` is behind local
-`main` in turn, missing the QR code, the PWA, the scanner, the privacy page and migration 0006.
-Untangling those three is its own job and has not been done.
+Keep them level. Vercel is not connected to the repo — a deploy ships whatever tree it is run from,
+so a branch that quietly falls behind is not a stale branch, it is a wrong answer to "what is
+live?". Push both after anything that lands.
