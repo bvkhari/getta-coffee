@@ -75,6 +75,11 @@ decisions that look odd from the code alone. The README covers setup, the securi
 
 ## Branches
 
-`main` is production. **The leaderboard feature lives on `staging`** (`src/shared/leaderboard.ts`,
-`src/app/card/leaderboard/page.tsx`, `supabase/migrations/0007_leaderboard.sql`) and is not on
-`main` yet — check out `staging` before continuing that work.
+**`staging` is what production runs**, as of 2026-08-30. Vercel is not connected to the repo, so a
+deploy ships whatever tree it is run from, and `vercel deploy --prod` was run from `staging` — which
+put the leaderboard, the reworded privacy page and the podium in front of customers along with the
+card fix. Work from `staging`.
+
+`main` is behind that and no longer describes anything deployed; `origin/main` is behind local
+`main` in turn, missing the QR code, the PWA, the scanner, the privacy page and migration 0006.
+Untangling those three is its own job and has not been done.
