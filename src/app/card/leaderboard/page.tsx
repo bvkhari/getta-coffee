@@ -5,6 +5,7 @@ import { BOARD_SIZE, fetchBoard, getBoard } from "@/shared/leaderboard";
 import { Footer } from "@/shared/ui/footer";
 import { Bean } from "@/shared/ui/slots";
 import { BoardRefreshButton } from "@/features/membership/board-refresh-button";
+import { AutoRefresh } from "@/features/membership/auto-refresh";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function LeaderboardPage({
   return (
     <div className="shell">
       <main className="screen">
+        <AutoRefresh />
         <h1 className="boardtitle">Leaderboard</h1>
 
         {board.rows.length === 0 ? (

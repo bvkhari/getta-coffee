@@ -9,6 +9,7 @@ import { Wordmark } from "@/shared/ui/wordmark";
 import { Progress } from "@/shared/ui/progress";
 import { Slots } from "@/shared/ui/slots";
 import { RefreshButton } from "@/features/membership/refresh-button";
+import { AutoRefresh } from "@/features/membership/auto-refresh";
 import { memberScanUrl, qrSvg } from "@/shared/qr";
 import { InstallHint } from "@/features/pwa/install-hint";
 
@@ -43,6 +44,7 @@ export default async function CardPage({
   return (
     <div className="shell">
       <main className="screen">
+        <AutoRefresh />
         <Wordmark />
 
         {/* The eyebrow now carries only the greeting. A returning member gets
