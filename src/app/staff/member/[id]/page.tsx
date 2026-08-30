@@ -2,8 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   canUndo,
-  findById,
-  getCard,
+  loadCard,
   STAMPS_PER_REWARD,
   voucherCode,
 } from "@/shared/members";
@@ -18,6 +17,9 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Getta Staff — Customer" };
 
 type Done = "stamp" | "reward" | "redeemed";
+
+/** How many recent stamps the history below lists, and so how many to fetch. */
+const RECENT_STAMPS = 5;
 
 /**
  * The confirmation lives on the card rather than on its own screen. Staff see
@@ -64,10 +66,10 @@ export default async function StaffMemberPage({
   const { id } = await params;
   const { done, dup, undone, expired } = await searchParams;
 
-  const member = await findById(id);
-  if (!member) redirect("/staff/lookup");
+  const found = await loadCard(id, RECENT_STAMPS);
+  if (!found) redirect("/staff/lookup");
+  const { member, card } = found;
 
-  const card = await getCard(member.id);
   const joined = new Date(member.created_at).toLocaleDateString("en-GB", {
     month: "short",
     year: "numeric",
@@ -190,7 +192,7 @@ export default async function StaffMemberPage({
           <div className="hist">
             <h2>Recent stamps</h2>
             <ul>
-              {card.visits.slice(0, 5).map((visit) => (
+              {card.visits.map((visit) => (
                 <li key={visit.at}>
                   <span>{visit.location ?? "Receipt collected"}</span>
                   <span>{formatVisit(visit.at)}</span>

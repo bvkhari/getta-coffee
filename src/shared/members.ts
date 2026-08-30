@@ -1,4 +1,3 @@
-import { unstable_cache, updateTag } from "next/cache";
 import { db } from "@/shared/supabase";
 import { currentMemberId } from "@/shared/session";
 
@@ -24,7 +23,11 @@ export type Card = {
    * stamps plus what each past redemption recorded consuming.
    */
   lifetime: number;
-  /** Newest first. `location` is null for stamps taken before tagging existed. */
+  /**
+   * Newest first, and only as many as the caller asked `loadCard` for — empty
+   * on the customer's card, which shows a count and no history. `location` is
+   * null for stamps taken before tagging existed.
+   */
   visits: { at: string; location: string | null }[];
 };
 
@@ -92,53 +95,59 @@ export async function createMember(
 }
 
 /**
- * Tag for one member's card. Cached reads are cleared by the three writes that
- * can change a balance, so a stamp shows up on the customer's phone straight
- * away and the minute below is only a backstop.
+ * A member and their card, in one query.
+ *
+ * Deliberately not cached. The card used to live in Next's data cache under a
+ * per-member tag that the three balance-changing writes cleared, which is right
+ * on one server and wrong on Vercel — the barista's stamp clears the tag on the
+ * instance that handled the POST, and the customer's phone reloads against a
+ * different instance holding its own copy. See the header on migration 0009.
+ *
+ * `visits` is how many recent stamps to bring back. The customer's card shows
+ * none, so it asks for none.
  */
-const cardTag = (memberId: string) => `card:${memberId}`;
-const A_MINUTE = 60;
+export async function loadCard(
+  memberId: string,
+  visits = 0,
+): Promise<{ member: Member; card: Card } | null> {
+  // A non-UUID id is nobody, not a database error — same reasoning as
+  // findMember above, and the same 22P02 to avoid.
+  if (!UUID.test(memberId)) return null;
 
-export function getCard(memberId: string): Promise<Card> {
-  // Built per call rather than once at module scope: the tag has to close over
-  // the member id, and unstable_cache's options are fixed when it is created.
-  return unstable_cache(
-    async (): Promise<Card> => {
-      const [open, past] = await Promise.all([
-        db()
-          .from("stamps")
-          .select("created_at, location")
-          .eq("member_id", memberId)
-          .order("created_at", { ascending: false }),
-        db()
-          .from("rewards")
-          .select("stamps_spent")
-          .eq("member_id", memberId),
-      ]);
+  const { data, error } = await db().rpc("card_for_member", {
+    p_member: memberId,
+    p_visits: visits,
+  });
+  if (error) throw error;
 
-      if (open.error) throw open.error;
-      if (past.error) throw past.error;
+  // No row means no such member. The caller decides whether that is a redirect
+  // to the join screen or back to the keypad.
+  const row = data?.[0];
+  if (!row) return null;
 
-      const stamps = open.data.length;
-      const spent = past.data.reduce(
-        (total, row) => total + (row.stamps_spent as number),
-        0,
-      );
+  // Postgres counts come back as bigint. Within a coffee shop's numbers these
+  // arrive as JSON numbers already, but the coercion costs nothing and says so.
+  const stamps = Number(row.open_stamps);
+  const spent = Number(row.spent_stamps);
 
-      return {
-        stamps,
-        rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
-        redeemed: past.data.length,
-        lifetime: spent + stamps,
-        visits: open.data.map((row) => ({
-          at: row.created_at as string,
-          location: row.location as string | null,
-        })),
-      };
+  return {
+    member: {
+      id: row.id,
+      name: row.name,
+      phone: row.phone,
+      created_at: row.created_at,
     },
-    ["member-card", memberId],
-    { tags: [cardTag(memberId)], revalidate: A_MINUTE },
-  )();
+    card: {
+      stamps,
+      rewardsReady: Math.floor(stamps / STAMPS_PER_REWARD),
+      redeemed: Number(row.redeemed),
+      lifetime: spent + stamps,
+      visits: row.visits.map((visit) => ({
+        at: visit.at,
+        location: visit.location,
+      })),
+    },
+  };
 }
 
 export async function addStamp(
@@ -150,7 +159,6 @@ export async function addStamp(
     p_location: location,
   });
   if (error) throw error;
-  updateTag(cardTag(memberId));
   return data as unknown as number;
 }
 
@@ -175,7 +183,6 @@ export async function undoLastStamp(memberId: string): Promise<boolean> {
     p_member: memberId,
   });
   if (error) throw error;
-  updateTag(cardTag(memberId));
   return data as unknown as boolean;
 }
 
@@ -184,7 +191,6 @@ export async function redeemReward(memberId: string): Promise<string> {
     p_member: memberId,
   });
   if (error) throw error;
-  updateTag(cardTag(memberId));
   return data as unknown as string;
 }
 

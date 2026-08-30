@@ -112,6 +112,21 @@ export type Database = {
         Args: { p_member: string; p_within?: string };
         Returns: boolean;
       };
+      card_for_member: {
+        Args: { p_member: string; p_visits?: number };
+        /** Empty when there is no member with that id. */
+        Returns: {
+          id: string;
+          name: string;
+          phone: string;
+          created_at: string;
+          open_stamps: number;
+          spent_stamps: number;
+          redeemed: number;
+          /** At most p_visits of them, newest first. */
+          visits: { at: string; location: string | null }[];
+        }[];
+      };
       leaderboard: {
         Args: { p_month?: string | null; p_limit?: number };
         Returns: {

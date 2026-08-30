@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  currentMember,
-  getCard,
+  loadCard,
   STAMPS_PER_REWARD,
   voucherCode,
 } from "@/shared/members";
+import { currentMemberId } from "@/shared/session";
 import { Footer } from "@/shared/ui/footer";
 
 export const dynamic = "force-dynamic";
 
 export default async function RewardPage() {
-  const member = await currentMember();
-  if (!member) redirect("/");
-
-  const card = await getCard(member.id);
+  const id = await currentMemberId();
+  const found = id ? await loadCard(id) : null;
+  if (!found) redirect("/");
+  const { member, card } = found;
   if (card.rewardsReady < 1) redirect("/card");
 
   return (
