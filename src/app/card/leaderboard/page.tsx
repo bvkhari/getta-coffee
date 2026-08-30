@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentMember } from "@/shared/members";
-import { BOARD_SIZE, getBoard } from "@/shared/leaderboard";
+import { BOARD_SIZE, fetchBoard, getBoard } from "@/shared/leaderboard";
 import { Footer } from "@/shared/ui/footer";
 import { Bean } from "@/shared/ui/slots";
+import { BoardRefreshButton } from "@/features/membership/board-refresh-button";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,18 @@ function initials(name: string): string {
   return (first + last).toUpperCase();
 }
 
-export default async function LeaderboardPage() {
+export default async function LeaderboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ fresh?: string }>;
+}) {
   const member = await currentMember();
   if (!member) redirect("/");
 
-  const board = await getBoard(member.id);
+  // `fresh` is set only by the REFRESH button below, and its value is never
+  // read -- it exists to make the request one the 30s cache cannot answer.
+  const { fresh } = await searchParams;
+  const board = fresh ? await fetchBoard(member.id) : await getBoard(member.id);
   const inTopTen = board.rows.some((row) => row.memberId === member.id);
 
   const podium = board.rows.slice(0, 3);
@@ -132,6 +140,7 @@ export default async function LeaderboardPage() {
           <Link className="btn ghost" href="/card">
             BACK TO MY CARD
           </Link>
+          <BoardRefreshButton />
         </div>
 
         <Footer />
