@@ -5,7 +5,7 @@ import { Footer } from "@/shared/ui/footer";
 import { Wordmark } from "@/shared/ui/wordmark";
 
 export const metadata: Metadata = {
-  title: "Privacy Notice · Getta Rewards",
+  title: "Privacy Policy · Getta Rewards",
   description: "What Getta Rewards collects, why, and how to have it removed.",
 };
 
@@ -22,16 +22,16 @@ export default function PrivacyPage() {
       <main className="screen">
         <Wordmark />
         <p className="eyebrow" style={{ textAlign: "center" }}>
-          Privacy Notice
+          Privacy Policy
         </p>
         <p className="sub">Last updated {UPDATED}</p>
 
         <div className="sheet prose">
           <p>
             Getta Rewards is the loyalty card run by {ENTITY}, which
-            operates Getta Coffee. This notice
-            explains what we hold about you and what you can ask us to do with
-            it, as required by the Personal Data Protection Act 2010.
+            operates Getta Coffee. This policy explains what we hold about you
+            and what you can ask us to do with it, as required by the Personal
+            Data Protection Act 2010.
           </p>
 
           <h2>What we collect</h2>
@@ -63,6 +63,14 @@ export default function PrivacyPage() {
             share it for advertising, or run any analytics or tracking in this
             app.
           </p>
+          <p>
+            Other members can see the leaderboard. If you are among the ten
+            highest stamp counts, your name and that count are shown there to
+            anyone signed in to a Getta Rewards card. Nothing else appears: not your phone number, not where
+            or when you were stamped. Everyone else sees only their own position,
+            and if you would rather not appear at all, tell us and we will take
+            you off it.
+          </p>
 
           <h2>Cookies</h2>
           <p>
@@ -88,7 +96,7 @@ export default function PrivacyPage() {
 
           <h2>Changes</h2>
           <p>
-            If this notice changes we will update the date at the top. Continuing
+            If this policy changes we will update the date at the top. Continuing
             to use your card means the current version applies.
           </p>
 

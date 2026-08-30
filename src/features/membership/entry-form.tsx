@@ -64,7 +64,7 @@ export function EntryForm() {
               footer, so it sits with the button that hands us the number. */}
           <p className="consent">
             By joining you agree to our{" "}
-            <Link href="/privacy">Privacy Notice</Link>.
+            <Link href="/privacy">Privacy Policy</Link>.
           </p>
           <p className="err" role="alert">
             {joinState.error ?? ""}

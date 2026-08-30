@@ -5,7 +5,7 @@ export function Footer() {
     <p className="foot">
       Crafted with Care, Served with Quality
       <br />
-      <Link href="/privacy">Privacy Notice</Link>
+      <Link href="/privacy">Privacy Policy</Link>
     </p>
   );
 }

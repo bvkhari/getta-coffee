@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { currentMember, getCard } from "@/shared/members";
+import { loadCard } from "@/shared/members";
+import { currentMemberId } from "@/shared/session";
 import { logOut } from "@/features/membership/actions";
 import { Footer } from "@/shared/ui/footer";
 import { Wordmark } from "@/shared/ui/wordmark";
@@ -18,10 +19,13 @@ export default async function CardPage({
 }: {
   searchParams: Promise<{ welcome?: string }>;
 }) {
-  const member = await currentMember();
-  if (!member) redirect("/");
+  // The cookie names a member; the row proves one. Resolved together with the
+  // card so the whole screen costs a single round trip.
+  const id = await currentMemberId();
+  const found = id ? await loadCard(id) : null;
+  if (!found) redirect("/");
+  const { member, card } = found;
 
-  const card = await getCard(member.id);
   const { welcome } = await searchParams;
   const firstName = member.name.split(" ")[0];
 
@@ -89,6 +93,9 @@ export default async function CardPage({
         ) : null}
 
         <div className="stack">
+          <Link className="btn ghost" href="/card/leaderboard">
+            LEADERBOARD
+          </Link>
           <RefreshButton />
         </div>
 
