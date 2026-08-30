@@ -79,6 +79,17 @@ decisions that look odd from the code alone. The README covers setup, the securi
 on 2026-08-30, after a spell where `staging` carried the leaderboard alone and `origin/main` had
 fallen behind local `main` by the QR code, the PWA and the scanner.
 
-Keep them level. Vercel is not connected to the repo — a deploy ships whatever tree it is run from,
-so a branch that quietly falls behind is not a stale branch, it is a wrong answer to "what is
-live?". Push both after anything that lands.
+**Vercel is connected to the GitHub repo, and `main` is the production branch.** A push to `main`
+deploys to `rewards.gettacoffee.com` by itself, with no command run and nothing to confirm; a push
+to any other branch builds a Preview. `npx vercel deploy --prod` still works and still uploads the
+working tree, but it is the exception now, and the next push to `main` supersedes whatever it put
+live.
+
+Two things follow, and both have already bitten:
+
+- **Apply the migration before pushing the code.** `supabase db push` is not automated, so a push
+  that lands code depending on a new function will deploy it to the counter before the function
+  exists. Migrations here are additive, so applying early is always safe and applying late is not.
+- **A Preview build talks to the production database.** The Preview environment points at the
+  production Supabase project on purpose, so every branch push reaches real customer rows.
+  Deployment protection (Vercel SSO) is the only thing keeping those URLs non-public — leave it on.
